@@ -2,9 +2,10 @@
     ViewData["Title"] = "Home Page";
 }
 
+<br />
 <div class="text-center">
     <h1 class="display-4">Expenses Planner</h1>
-    <hr /><br />
-    <a class="btn btn-primary" asp-action="Expenses">See all expenses</a>
+    <hr /><br /><br />
+    <a class="btn btn-primary" asp-controller="Expenses" asp-action="Index">See all expenses</a>
     <a class="btn btn-secondary" asp-action="CreateEditExpenses">Create New</a>
 </div>

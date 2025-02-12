@@ -26,20 +26,16 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\tiago\source\repos\ExpensesPlanner\ExpensesPlanner
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Expenses/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwZW5zZXNcQ3JlYXRlLmNzaHRtbA==
+[C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Expenses/Delete.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwZW5zZXNcRGVsZXRlLmNzaHRtbA==
+[C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Account/Signup.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxTaWdudXAuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Expenses/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwZW5zZXNcRGV0YWlscy5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Expenses/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwZW5zZXNcRWRpdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Expenses/Index.cshtml]
@@ -48,10 +44,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Home/CreateEditExpenses.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDcmVhdGVFZGl0RXhwZW5zZXMuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Home/Expenses.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxFeHBlbnNlcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Home/Index.cshtml]

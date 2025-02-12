@@ -1,41 +1,44 @@
-﻿@model IEnumerable<ExpensesPlanner.Models.Expense>
-
-@{
-    ViewData["Title"] = "Index";
+﻿@{
+    ViewData["Title"] = "Expenses";
 }
 
-<h1>Index</h1>
+@model List<Expense>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Amount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Amount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Detail" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="text-center mt-5 pt-5">
+    <h1 class="display-4">Expenses</h1>
+    <h3>Total Expenses: @ViewBag.Expenses€</h3>
+    <hr />
+
+    <div class="container mt-4">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Description</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @{
+                    foreach (var expense in Model)
+                    {
+                        <tr>
+                            <th scope="row">@expense.Id</th>
+                            <td>@expense.Amount</td>
+                            <td>@expense.Description</td>
+                            <td>
+                                <a asp-asp-controller="Expenses" asp-action="Details" asp-route-id="@expense.Id">Edit</a>
+                                <a asp-action="" asp-route-id="@expense.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <br />
+    <a class="btn btn-primary" asp-controller="Home" asp-action="CreateEditExpenses">Create Expense</a>
+</div>

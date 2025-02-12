@@ -39,7 +39,7 @@ namespace ExpensesPlanner.Controllers
                 return View(expense);
             }
 
-            ViewBag.NextID = _context.Expenses.Any() ? _context.Expenses.Last().Id + 1 : 0;
+            ViewBag.NextID = _context.Expenses.Any() ? _context.Expenses.OrderBy(x => x.Id).Last().Id + 1 : 0;
 
             return View();
         }
@@ -59,7 +59,7 @@ namespace ExpensesPlanner.Controllers
             
             _context.SaveChanges();
 
-            return RedirectToAction("Expenses");
+            return RedirectToAction("Index", "Expenses");
         }
 
         public IActionResult DeleteExpense(int id)
