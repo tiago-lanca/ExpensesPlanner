@@ -7,32 +7,33 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ExpensesPlanner.Models;
 using ExpensesPlanner.Data;
+using ExpensesPlanner.Interface;
 
 namespace ExpensesPlanner.Controllers
 {
     public class ExpensesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IExpenseRepository _expenseRepository;
 
-        public ExpensesController(ApplicationDbContext context)
+        public ExpensesController(IExpenseRepository expenseRepository)
         {
-            _context = context;
+            _expenseRepository = expenseRepository;
         }
 
         // GET: Expenses
         public async Task<IActionResult> Index()
         {
-            var allExpenses = _context.Expenses.ToList();
-            var totalExpenses = allExpenses.Sum(expense => expense.Amount);
+            IEnumerable<Expense> allExpenses = await _expenseRepository.GetAllExpenses();
+            decimal totalExpenses = _expenseRepository.GetTotalAmount();
 
             ViewBag.Expenses = totalExpenses;
 
-            return View(await _context.Expenses.ToListAsync());
+            return View(allExpenses);
         }
 
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            var expense = _context.Expenses.FirstOrDefault(expense => expense.Id == id);
+            Expense expense = await _expenseRepository.GetByIdAsync(id);
             return View(expense);
         }
     }

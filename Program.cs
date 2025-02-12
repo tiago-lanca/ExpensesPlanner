@@ -1,5 +1,7 @@
 using ExpensesPlanner.Data;
+using ExpensesPlanner.Interface;
 using ExpensesPlanner.Models;
+using ExpensesPlanner.Repository;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,7 @@ namespace ExpensesPlanner
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );
@@ -34,10 +37,10 @@ namespace ExpensesPlanner
             //app.UseAuthentication();
             //app.UseAuthorization();
 
-            if (args.Length == 1 && args[0].ToLower() == "seeddata")
+            /*if (args.Length == 1 && args[0].ToLower() == "seeddata")
             {
                 await Seed.SeedUsersAndRolesAsync(app);
-            }
+            }*/
 
 
             // Configure the HTTP request pipeline.
