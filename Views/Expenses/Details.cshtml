@@ -21,8 +21,8 @@
                                 <h2 class="fw-bolder">Value: @Model.Amount€</h2>
                                 <p></p>
                                 <h5 class="mb-4">Description: @Model.Description</h5>
-                                <a class="btn btn-success m-4 ">Edit</a>
-                                <a class="btn btn-danger ">Delete</a>
+                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-success m-4">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger ">Delete</a>
                             </div>
                             <div class="p-4">                                
                             </div>

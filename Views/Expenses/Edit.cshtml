@@ -1,0 +1,32 @@
+﻿
+@model Expense
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<br />
+<br />
+<h2>Edit Expense</h2>
+<br />
+<br />
+
+<form method="post" asp-action="Edit">
+    <div class="mb-3">
+        <label asp-for="Id" class="form-label">ID:</label>
+        <input asp-for="Id" class="form-control w-25" disabled>
+
+    </div>
+    <div class="mb-3">
+        <label asp-for="Amount" class="form-label">Amount: </label>
+        <input asp-for="Amount" type="number" class="form-control w-25" step="0.01">
+        <span asp-validation-for="Amount" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Description: </label>
+        <input asp-for="Description" class="form-control w-50">
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

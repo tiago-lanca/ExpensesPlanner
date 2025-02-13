@@ -29,8 +29,9 @@
                             <td>@expense.Amount</td>
                             <td>@expense.Description</td>
                             <td>
-                                <a asp-asp-controller="Expenses" asp-action="Details" asp-route-id="@expense.Id">Edit</a>
-                                <a asp-action="" asp-route-id="@expense.Id">Delete</a>
+                                <a asp-controller="Expenses" asp-action="Details" asp-route-id="@expense.Id">Details</a>
+                                <a asp-controller="Expenses" asp-action="Edit" asp-route-id="@expense.Id">Edit</a>
+                                <a asp-controller="Expenses" asp-action="Delete" asp-route-id="@expense.Id">Delete</a>
                             </td>
                         </tr>
                     }
@@ -40,5 +41,5 @@
     </div>
     
     <br />
-    <a class="btn btn-primary" asp-controller="Home" asp-action="CreateEditExpenses">Create Expense</a>
+    <a class="btn btn-primary" asp-controller="Expenses" asp-action="Create">Create Expense</a>
 </div>

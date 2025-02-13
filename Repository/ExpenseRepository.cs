@@ -2,6 +2,7 @@
 using ExpensesPlanner.Interface;
 using ExpensesPlanner.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 
 namespace ExpensesPlanner.Repository
 {
@@ -52,7 +53,8 @@ namespace ExpensesPlanner.Repository
 
         public bool Update(Expense expense)
         {
-            throw new NotImplementedException();
+            _context.Update(expense);
+            return Save();
         }
     }
 }

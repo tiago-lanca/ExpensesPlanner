@@ -1,14 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ExpensesPlanner.Models
+namespace ExpensesPlanner.ViewModels
 {
-    public class Expense
-    {
-        public int Id { get; set; }
+    public class CreateExpenseViewModel
+    {        
         [Required]
         public decimal Amount { get; set; }
         [Required]
         public string? Description { get; set; }
-        
     }
 }
