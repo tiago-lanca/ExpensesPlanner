@@ -24,7 +24,8 @@ namespace ExpensesPlanner
 
 
             builder.Services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
             builder.Services.AddMemoryCache();
             builder.Services.AddSession();
 

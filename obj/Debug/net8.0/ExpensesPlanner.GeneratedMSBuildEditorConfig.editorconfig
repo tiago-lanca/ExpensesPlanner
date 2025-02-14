@@ -30,8 +30,8 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Account/Signup.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxTaWdudXAuY3NodG1s
+[C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Expenses/Create.cshtml]
@@ -48,10 +48,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Expenses/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhwZW5zZXNcSW5kZXguY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Home/CreateEditExpenses.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDcmVhdGVFZGl0RXhwZW5zZXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/tiago/source/repos/ExpensesPlanner/ExpensesPlanner/Views/Home/Index.cshtml]

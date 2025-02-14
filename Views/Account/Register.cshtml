@@ -1,0 +1,70 @@
+﻿@using ExpensesPlanner.ViewModels
+@model RegisterViewModel
+@{
+}
+
+<br />
+<br />
+<h2>Register New User</h2>
+<br />
+<br />
+
+<form method="post" asp-action="Register">
+    <!-- First Name -->
+    <div class="mb-3">
+        <label asp-for="FirstName" class="form-label">First Name:</label>
+        <input asp-for="FirstName" type="text" class="form-control w-25">
+    
+    <!-- Last Name -->
+    </div>
+    <div class="mb-3">
+        <label asp-for="LastName" class="form-label">Last Name: </label>
+        <input asp-for="LastName" type="text" class="form-control w-25">
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+
+    <!-- Phone -->
+    <div class="mb-3">
+        <label asp-for="Phone" class="form-label">Phone: </label>
+        <input asp-for="Phone" type="text" class="form-control w-25">
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <!-- Email Address -->
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">Email Address: </label>
+        <input asp-for="Email" type="email" class="form-control w-25">
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <!-- Password -->
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label">Password: </label>
+        <input asp-for="Password" type="password" class="form-control w-25">
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="mb-3">
+        <label asp-for="ConfirmPassword" class="form-label">Confirm Password: </label>
+        <input asp-for="ConfirmPassword" type="password" class="form-control w-25">
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <!-- Address -->
+    <div class="mb-3">
+        <label asp-for="Address" class="form-label">Address: </label>
+        <input asp-for="Address" type="text" class="form-control w-50">
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+
+    <!-- City -->
+    <div class="mb-3">
+        <label asp-for="City" class="form-label">City: </label>
+        <input asp-for="City" type="text" class="form-control w-25">
+        <span asp-validation-for="City" class="text-danger"></span>
+    </div>
+
+    <!-- Signup Button -->
+    <button type="submit" class="w-100 mb-2 btn btn-lg rounded-3 btn-primary">Sign up</button>
+</form>
