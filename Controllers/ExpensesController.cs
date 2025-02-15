@@ -9,16 +9,19 @@ using ExpensesPlanner.Models;
 using ExpensesPlanner.Data;
 using ExpensesPlanner.Interface;
 using ExpensesPlanner.ViewModels;
+using System.Security.Claims;
 
 namespace ExpensesPlanner.Controllers
 {
     public class ExpensesController : Controller
     {
         private readonly IExpenseRepository _expenseRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ExpensesController(IExpenseRepository expenseRepository)
+        public ExpensesController(IExpenseRepository expenseRepository, IHttpContextAccessor httpContextAccessor)
         {
             _expenseRepository = expenseRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         // GET: Expenses
@@ -69,10 +72,13 @@ namespace ExpensesPlanner.Controllers
         {
             if (ModelState.IsValid)
             {
+                expenseVM.UserId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
                 Expense newExpense = new Expense
                 {
                     Amount = expenseVM.Amount,
                     Description = expenseVM.Description,
+                    UserId = expenseVM.UserId,
                 };
 
                 _expenseRepository.Add(newExpense);

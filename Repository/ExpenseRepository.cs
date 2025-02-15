@@ -1,17 +1,21 @@
 ﻿using ExpensesPlanner.Data;
 using ExpensesPlanner.Interface;
 using ExpensesPlanner.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using System.Security.Claims;
 
 namespace ExpensesPlanner.Repository
 {
     public class ExpenseRepository : IExpenseRepository
     {
         private readonly ApplicationDbContext _context;
-        public ExpenseRepository(ApplicationDbContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public ExpenseRepository(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
         public bool Add(Expense expense)
         {
@@ -27,7 +31,15 @@ namespace ExpensesPlanner.Repository
 
         public async Task<IEnumerable<Expense>> GetAllExpenses()
         {
-            return await _context.Expenses.ToListAsync();
+            var currentUser = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (currentUser != null)
+            {
+                var userExpenses = _context.Expenses.Where(x => x.UserId.ToString() == currentUser.ToString());
+
+                return userExpenses.ToList();
+            }
+
+            return null;
         }
 
         public async Task<Expense> GetByIdAsync(int id)
@@ -42,7 +54,9 @@ namespace ExpensesPlanner.Repository
 
         public decimal GetTotalAmount()
         {
-            return _context.Expenses.Sum(expense => expense.Amount);
+            var currentUser = _httpContextAccessor.HttpContext?.User;
+            var userExpenses = _context.Expenses.Where(expense => expense.UserId.ToString() == currentUser.ToString());
+            return userExpenses.Sum(expense => expense.Amount);
         }
 
         public bool Save()

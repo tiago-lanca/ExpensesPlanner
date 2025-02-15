@@ -35,8 +35,8 @@ namespace ExpensesPlanner
 
             var app = builder.Build();
 
-            //app.UseAuthentication();
-            //app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             /*if (args.Length == 1 && args[0].ToLower() == "seeddata")
             {

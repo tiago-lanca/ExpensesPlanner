@@ -9,6 +9,7 @@ namespace ExpensesPlanner.Models
         public decimal Amount { get; set; }
         [Required]
         public string? Description { get; set; }
+        public string? UserId { get; set; }
         
     }
 }
