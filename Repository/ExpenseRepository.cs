@@ -1,4 +1,5 @@
 ﻿using ExpensesPlanner.Data;
+using ExpensesPlanner.Extensions;
 using ExpensesPlanner.Interface;
 using ExpensesPlanner.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -32,10 +33,10 @@ namespace ExpensesPlanner.Repository
 
         public async Task<IEnumerable<Expense>> GetAllExpenses()
         {
-            var currentUser = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var currentUser = _httpContextAccessor.HttpContext.User.GetUserID();
             if (currentUser != null)
             {
-                var userExpenses = _context.Expenses.Where(x => x.UserId.ToString() == currentUser.ToString());
+                var userExpenses = _context.Expenses.Where(x => x.UserId == currentUser);
 
                 return userExpenses.ToList();
             }
@@ -55,8 +56,8 @@ namespace ExpensesPlanner.Repository
 
         public decimal GetTotalAmount()
         {
-            var currentUser = _httpContextAccessor.HttpContext?.User;
-            var userExpenses = _context.Expenses.Where(expense => expense.UserId.ToString() == currentUser.ToString());
+            var currentUser = _httpContextAccessor.HttpContext.User.GetUserID();
+            var userExpenses = _context.Expenses.Where(expense => expense.UserId == currentUser);
             return userExpenses.Sum(expense => expense.Amount);
         }
 

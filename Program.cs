@@ -17,6 +17,8 @@ namespace ExpensesPlanner
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IExpenseRepository, ExpenseRepository>();
+            builder.Services.AddScoped<IAdminDashboardRepository, AdminDashboardRepository>();
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
             );

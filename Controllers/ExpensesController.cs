@@ -52,9 +52,17 @@ namespace ExpensesPlanner.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             Expense expense = await _expenseRepository.GetByIdAsync(id);
-            if (expense == null) return View("Error");
+            var editExpenseViewMovel = new EditExpenseViewModel
+            {
+                Id = expense.Id,
+                Amount = expense.Amount,
+                Description = expense.Description,
+                UserId = _httpContextAccessor.HttpContext.User.GetUserID()
+            };
 
-            return View(expense);
+            if (editExpenseViewMovel == null) return View("Error");
+
+            return View(editExpenseViewMovel);
         }
 
         [HttpPost]
@@ -72,7 +80,10 @@ namespace ExpensesPlanner.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            var currentUserId = _httpContextAccessor.HttpContext.User.GetUserID();
+            var createExpenseViewModel = new CreateExpenseViewModel { UserId = currentUserId };
+
+            return View(createExpenseViewModel);
         }
 
         [HttpPost]
@@ -80,8 +91,6 @@ namespace ExpensesPlanner.Controllers
         {
             if (ModelState.IsValid)
             {
-                expenseVM.UserId = _httpContextAccessor.HttpContext?.User.GetUserID();
-
                 Expense newExpense = new Expense
                 {
                     Amount = expenseVM.Amount,
