@@ -10,6 +10,7 @@ using ExpensesPlanner.Data;
 using ExpensesPlanner.Interface;
 using ExpensesPlanner.ViewModels;
 using System.Security.Claims;
+using ExpensesPlanner.Extensions;
 
 namespace ExpensesPlanner.Controllers
 {
@@ -27,12 +28,19 @@ namespace ExpensesPlanner.Controllers
         // GET: Expenses
         public async Task<IActionResult> Index()
         {
-            IEnumerable<Expense> allExpenses = await _expenseRepository.GetAllExpenses();
-            decimal totalExpenses = _expenseRepository.GetTotalAmount();
+            if (User.Identity.IsAuthenticated)
+            {
+                IEnumerable<Expense> allExpenses = await _expenseRepository.GetAllExpenses();
+                decimal totalExpenses = _expenseRepository.GetTotalAmount();
 
-            ViewBag.Expenses = totalExpenses;
+                ViewBag.Expenses = totalExpenses;
 
-            return View(allExpenses);
+                return View(allExpenses);
+            }
+            else
+            {
+                return RedirectToAction("Login", "Account");
+            }
         }
 
         public async Task<IActionResult> Details(int id)
@@ -72,7 +80,7 @@ namespace ExpensesPlanner.Controllers
         {
             if (ModelState.IsValid)
             {
-                expenseVM.UserId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                expenseVM.UserId = _httpContextAccessor.HttpContext?.User.GetUserID();
 
                 Expense newExpense = new Expense
                 {

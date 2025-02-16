@@ -20,6 +20,7 @@ namespace ExpensesPlanner.Repository
         public bool Add(Expense expense)
         {
             _context.Add(expense);
+            
             return Save();
         }
 

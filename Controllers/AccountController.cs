@@ -1,4 +1,5 @@
 ﻿using ExpensesPlanner.Data;
+using ExpensesPlanner.Interface;
 using ExpensesPlanner.Models;
 using ExpensesPlanner.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -75,7 +76,7 @@ namespace ExpensesPlanner.Controllers
             }
 
             User newUser = new User()
-            {                
+            {
                 UserName = registerViewModel.Email,
                 FirstName = registerViewModel.FirstName,
                 LastName = registerViewModel.LastName,
@@ -92,7 +93,9 @@ namespace ExpensesPlanner.Controllers
             {
                 await _userManager.AddToRoleAsync(newUser, UserRoles.User);
                 //await _signInManager.SignInAsync(newUser, false);               
-            } 
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(newUser, registerViewModel.Password, false, false);
 
             return RedirectToAction("Index", "Home");
         }
