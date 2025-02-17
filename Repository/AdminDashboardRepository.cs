@@ -2,6 +2,8 @@
 using ExpensesPlanner.Extensions;
 using ExpensesPlanner.Interface;
 using ExpensesPlanner.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesPlanner.Repository
 {
@@ -9,10 +11,12 @@ namespace ExpensesPlanner.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public AdminDashboardRepository(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+        private readonly UserManager<User> _userManager;
+        public AdminDashboardRepository(ApplicationDbContext context, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
         }
         public bool Add(User user)
         {
@@ -26,9 +30,9 @@ namespace ExpensesPlanner.Repository
             return Save();
         }
 
-        public async Task<List<User>> GetAllUsers()
+        public async Task<IEnumerable<User>> GetAllUsers()
         {
-            return _context.Users.ToList();
+            return await _context.Users.ToListAsync();
         }
 
         public async Task<User> GetUserByEmail(string email)
@@ -59,6 +63,16 @@ namespace ExpensesPlanner.Repository
         {
             _context.Update(user);
             return Save();
+        }
+
+        public async Task<string> GetUserRole(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return "No Roles";
+
+            var roleName = await _userManager.GetRolesAsync(user);
+            return roleName.FirstOrDefault("No Role");
+            
         }
     }
 }

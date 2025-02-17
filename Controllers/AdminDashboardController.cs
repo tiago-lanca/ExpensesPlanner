@@ -1,5 +1,7 @@
 ﻿using ExpensesPlanner.Interface;
 using ExpensesPlanner.Models;
+using ExpensesPlanner.Repository;
+using ExpensesPlanner.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpensesPlanner.Controllers
@@ -17,7 +19,24 @@ namespace ExpensesPlanner.Controllers
             if (User.IsInRole(UserRoles.Admin))
             {
                 var users = await _adminDashboardRepository.GetAllUsers();
-                return View(users);
+                List<AdminDashboardUserViewModel> result = new List<AdminDashboardUserViewModel>();
+
+                foreach(User user in users)
+                {
+                    var userDashboard = new AdminDashboardUserViewModel()
+                    {
+                        Id = user.Id,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Phone = user.Phone,
+                        Role = await _adminDashboardRepository.GetUserRole(user.Id),
+                    };
+
+                    result.Add(userDashboard);
+                    
+                }
+
+                return View(result);
             }
             else
                 return RedirectToAction("Index", "Home");
