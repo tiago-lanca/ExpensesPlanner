@@ -1,4 +1,5 @@
 ﻿using ExpensesPlanner.Data;
+using ExpensesPlanner.Extensions;
 using ExpensesPlanner.Interface;
 using ExpensesPlanner.Models;
 using ExpensesPlanner.ViewModels;
@@ -11,13 +12,13 @@ namespace ExpensesPlanner.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, ApplicationDbContext context)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public IActionResult Login()
@@ -105,6 +106,63 @@ namespace ExpensesPlanner.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        public async Task<IActionResult> Details(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return View("Error");
+
+            var userDetailsViewModel = new UserDetailsViewModel()
+            {
+                Id = _httpContextAccessor.HttpContext.User.GetUserID(),
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Phone = user.Phone,
+                Address = user.Address,
+                City = user.City
+            };
+
+            return View(userDetailsViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(UserDetailsViewModel userDetailsViewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Failed to edit account profile.");
+                return View("Edit", userDetailsViewModel);
+            }
+
+            var user = await _userManager.FindByIdAsync(userDetailsViewModel.Id);
+            
+            if (user == null) return View("Error");
+
+            MapUserEditAccount(user, userDetailsViewModel);
+            
+            var result = await _userManager.UpdateAsync(user);
+
+            if (result.Succeeded) 
+                if(_httpContextAccessor.HttpContext!.User.IsInRole(UserRoles.Admin))
+                    return RedirectToAction("Index", "AdminDashboard");
+                else
+                    return RedirectToAction("Index", "Home");
+
+            else 
+                return View("Edit", "Failed to edit account profile after trying to update.");
+        }
+
+        private void MapUserEditAccount(User user, UserDetailsViewModel userDetailsVM)
+        {
+            user.Id = userDetailsVM.Id;
+            user.FirstName = userDetailsVM.FirstName;
+            user.LastName = userDetailsVM.LastName;
+            user.Email = userDetailsVM.Email;
+            user.Phone = userDetailsVM.Phone;
+            user.Address = userDetailsVM.Address;
+            user.City = userDetailsVM.City;
         }
     }
 }

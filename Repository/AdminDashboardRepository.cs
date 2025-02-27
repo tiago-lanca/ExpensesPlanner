@@ -10,12 +10,10 @@ namespace ExpensesPlanner.Repository
     public class AdminDashboardRepository : IAdminDashboardRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<User> _userManager;
-        public AdminDashboardRepository(ApplicationDbContext context, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor)
+        public AdminDashboardRepository(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
-            _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
         }
         public bool Add(User user)

@@ -29,10 +29,10 @@
                             <th scope="row">@user.FirstName</th>
                             <td>@user.LastName</td>
                             <td>@user.Phone</td>
-                            <td>@user.Role</td>
+                            <td>@user.Role.ToUpper()</td>
                             <td>
-                                <a asp-controller="AdminDashboard" asp-action="Edit" asp-route-id="@user.Id">Edit</a>
-                                <a asp-controller="AdminDashboard" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
+                                <a asp-controller="Account" asp-action="Details" asp-route-id="@user.Id">Edit</a>
+                                <a asp-controller="Account" asp-action="Delete" asp-route-id="@user.Id">Delete</a>
                             </td>
                         </tr>
                     }

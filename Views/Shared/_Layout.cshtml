@@ -35,12 +35,20 @@
             @if (User.Identity.IsAuthenticated)
             {
                 <div class="col-md-3 text-end">
-                    <form asp-controller="Account" asp-action="Logout">
-                        <a class="btn btn-primary">@User.Identity.Name</a>
-                    
-                        <button class="btn btn-outline-primary me-2" type="submit">Logout</button>
-                    </form>
+                    <div class="dropdown">
+                        <form asp-controller="Account" asp-action="Logout">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @User.Identity.Name</button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#">Profile</a>
+                                <a class="dropdown-item" href="#">Edit</a>
+                            </div>
+                        
+                            <button class="btn btn-outline-primary me-2" type="submit">Logout</button>
+                        </form>
+                    </div>
                 </div>
+                                    
             }
             else
             {
