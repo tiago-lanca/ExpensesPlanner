@@ -1,0 +1,5 @@
+﻿
+<RadzenText TextStyle="TextStyle.Subtitle1">Are you sure you want to delete user <b>@user.FirstName @user.LastName</b> ?</RadzenText>
+<br />
+<RadzenButton Click="@(() => DeleteUserAsync())" Text="Yes" Icon="check_circle" ButtonStyle="ButtonStyle.Success" />
+<RadzenButton Click=@(() => CancelDelete()) Text="No" Icon="close" ButtonStyle="ButtonStyle.Danger" />

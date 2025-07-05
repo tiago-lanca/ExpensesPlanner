@@ -1,0 +1,9 @@
+﻿@attribute [Route(PagesRoutes.CreateExpense)]
+@using ExpensesPlanner.Client.Models
+
+<h3>Create New Expense</h3>
+@foreach (Expense expense in expenses){
+    <h2>@expense.Description - Value: @expense.Amount</h2>
+}
+
+

@@ -1,0 +1,64 @@
+﻿@attribute [Route(PagesRoutes.AllUsers)]
+@using ExpensesPlanner.Client.DTO
+@using ExpensesPlanner.Client.Models
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+
+
+<PageTitle>All Users</PageTitle>
+
+<h3>All Users</h3>
+<RadzenButton Icon="add_circle" Text="Create User" Click="@(() => Navigation.NavigateTo(PagesRoutes.RegisterUser))" ButtonStyle="ButtonStyle.Success" />
+<br />
+<br />
+
+@if (users == null)
+{
+    <em>Loading...</em>
+}
+else if (users.Count == 0)
+{
+    <p> No users found.</p>
+}
+else
+{
+    <RadzenDataGrid AllowFiltering="false" AllowColumnResize="false" AllowAlternatingRows="false" header FilterMode="FilterMode.Advanced" AllowSorting="false" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                    Data="@users" TItem="UserDetails" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedUsers>
+        <Columns>
+
+            <RadzenDataGridColumn Title="Photo"  Frozen="true" Sortable="false" Filterable="false" HeaderCssClass="font-bold" Width="80px" TextAlign="TextAlign.Center">
+                <Template Context="data">
+                    @if(data.ProfilePictureUrl == null){
+                        <RadzenImage class="rz-gravatar" AlternateText="No Profile Picture" />
+                    }
+                    else
+                    {
+                        <RadzenImage Path="@($"data:image/png;base64,{Convert.ToBase64String(data.ProfilePictureUrl)}")" 
+                        class="rz-gravatar" AlternateText="@(data.FirstName + " " + data.LastName)" />
+                    }    
+                    
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Title="Name" Frozen="true" Width="150px" HeaderCssClass="font-bold">
+                <Template Context="user">
+                    @($"{user.FirstName} {user.LastName}")
+                </Template>
+            </RadzenDataGridColumn>
+
+            <RadzenDataGridColumn Property="Email" Title="Email" Width="150px" HeaderCssClass="font-bold" />
+            <RadzenDataGridColumn Property="PhoneNumber" Title="Phone Number" Width="120px" HeaderCssClass="font-bold" />
+            <RadzenDataGridColumn Property="Address" Title="Address" FormatString="{0:d}" Width="160px" HeaderCssClass="font-bold" />
+            <RadzenDataGridColumn Property="DateOfBirth" Title="Date of Birth" FormatString="{0:d}" Width="80px" HeaderCssClass="font-bold" />
+            <RadzenDataGridColumn Property="Role" Title="Role" Width="50px"  HeaderCssClass="font-bold"/>
+            <RadzenDataGridColumn Title="Options" Width="160px" HeaderCssClass="font-bold">
+                <Template Context="user">
+                    <RadzenButton Icon="search" Title="Details" Click="@(() => OpenUserDetails(user.Id))" ButtonStyle="ButtonStyle.Success" />
+                    <RadzenButton Icon="settings" Title="Edit" Click="@(() => Navigation.NavigateTo(PagesRoutes.EditUser.Replace("{Id}", user.Id)))" ButtonStyle="ButtonStyle.Warning" />
+                    <RadzenButton Icon="delete_forever" Title="Delete user forever" Click="@(() => OpenDeleteUserDialog(user.Id))" Shade="Shade.Darker" Variant="Variant.Outlined" ButtonStyle="ButtonStyle.Danger" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+}

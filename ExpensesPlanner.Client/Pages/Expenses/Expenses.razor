@@ -1,0 +1,41 @@
+﻿@attribute [Route(PagesRoutes.AllExpenses)]
+@using ExpensesPlanner.Client.Models
+@attribute [StreamRendering(true)]
+
+<PageTitle>Expenses</PageTitle>
+
+<h3>Expenses</h3>
+<NavLink class="btn btn-success" href="/expenses/create">Create New Expense</NavLink>
+<br />
+<br />
+
+@if (expenses == null)
+{
+    <em>Loading...</em>
+}
+else if(expenses.Count == 0)
+{
+    <p> No expenses found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Description</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Expense expense in expenses)
+            {
+                <tr>
+                    <td>@expense.Id</td>
+                    <td>@expense.Description</td>
+                    <td>@expense.Amount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

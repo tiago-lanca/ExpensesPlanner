@@ -1,0 +1,126 @@
+﻿@attribute [Route(PagesRoutes.EditUser)]
+@using ExpensesPlanner.Client.DTO
+@using ExpensesPlanner.Client.RadzenComponents
+@rendermode InteractiveAuto
+@inject IJSRuntime JS
+
+<h3 class="font-bold">Edit User</h3>
+
+<br /><br />
+
+<RadzenRow>
+    <RadzenColumn Size="5">
+    <RadzenTemplateForm Data="@editUserModel" Submit="@UpdateUser" @ref="form" TItem="UserDetails">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+            
+                <RadzenStack>
+                
+                             <!-- IMAGE PREVIEW -->
+                    <RadzenStack  Gap="1rem">
+                    <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                        @if (@imagePreview != null)
+                        {
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <img src="@imagePreview" alt="Selected Image Preview" style="max-width: 200px; border-radius: 20%; margin-top: 10px; max-height: 200px;" />
+                            </RadzenColumn>
+                        }
+                     </RadzenRow>
+
+                             <!-- FILE INPUT -->
+                    <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                        @* <RadzenLabel Text="Profile Picture" Component="ProfilePictureUrl" /> *@
+                       <RadzenColumn Size="4" SizeMD="4">
+                            <RadzenLabel Text="Profile Picture" class="font-bold" />
+                       </RadzenColumn>
+                       <RadzenColumn Size="4" SizeMD="4">
+                           <label class="file-upload-wrapper">
+                            <InputFile id="fileUpload" OnChange="OnImageSelected" accept="image/*" class="file-input-overlay" style="width: 100%; height: 100%" />
+                            <RadzenButton Icon="backup" Text="Upload Image" Click="@TriggerFileInput" ButtonStyle="ButtonStyle.Primary" style="width: 100%; height: 100%; " />
+                           </label>
+                        </RadzenColumn>
+                    </RadzenRow>
+                    <br />
+
+                                <!-- First Name -->
+                            <!-- RTextBox Value="editUserModel.FirstName" Name="FirstName" /> -->
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="First Name" Component="FirstName" class="font-bold" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextBox @bind-Value="editUserModel.FirstName" Name="Name" Style="width: 100%;" />
+                        </RadzenColumn>
+                    </RadzenRow>
+
+                            <!-- Last Name -->
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Last Name" Component="LastName" class="font-bold" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextBox @bind-Value="editUserModel.LastName" Name="LastName" Style="width: 100%;" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                            <!--<ValidationMessage For="@(() => registerModel.LastName)" />-->
+
+                            <!-- Email -->
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Email" Component="Email" class="font-bold" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                                    <RadzenTextBox @bind-Value="editUserModel.Email" Name="Email" Style="width: 100%;" />
+                        </RadzenColumn>
+                    </RadzenRow>
+
+                            <!-- Phone Number -->
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Phone Number" Component="PhoneNumber" class="font-bold" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                                    <RadzenTextBox @bind-Value="editUserModel.PhoneNumber" Name="PhoneNumber" Style="width: 100%;" />
+                        </RadzenColumn>                    
+                    </RadzenRow>
+
+                    <!-- Address -->
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Address" Component="Address" class="font-bold" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextBox @bind-Value="editUserModel.Address" Name="Address" Style="width: 100%;" />
+                        </RadzenColumn>
+                    </RadzenRow>
+
+                            <!-- Profile Picture 
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">                        
+                            <RadzenLabel Text="Profile Picture" Component="ProfilePictureUrl" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                                    <RadzenFileInput Name="ProfilePictureUrl"
+                            TValue="string" Style="width: 100%;"/>
+                        </RadzenColumn>
+                    </RadzenRow> -->
+
+                            <!-- Button Submit -->
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                        
+                        </RadzenColumn>
+                        <RadzenColumn Size="3" SizeMD="3" >
+                            <RadzenButton Icon="save" IsBusy="@busy" BusyText="Saving..." ButtonType="ButtonType.Submit" Text="Save" ButtonStyle="ButtonStyle.Success" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="3" SizeMD="3">
+                            <RadzenButton Click="@Cancel" Text="Cancel" ButtonStyle="ButtonStyle.Danger" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                    
+                    
+                    </RadzenStack>
+            </RadzenStack>
+    </RadzenTemplateForm>
+    </RadzenColumn>
+</RadzenRow>

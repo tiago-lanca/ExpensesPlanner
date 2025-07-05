@@ -1,0 +1,6 @@
+services:
+  expensesplannerapi:
+    image: ${DOCKER_REGISTRY-}expensesplannerapi
+    build:
+      context: .
+      dockerfile: ExpensesPlannerAPI/Dockerfile

@@ -1,0 +1,141 @@
+﻿@attribute [Route(PagesRoutes.RegisterUser)]
+@using ExpensesPlanner.Client.DTO
+@using ExpensesPlanner.Client.RadzenComponents
+@rendermode InteractiveAuto
+@inject IJSRuntime JS
+
+<h3>Register New User</h3>
+
+
+<RadzenTemplateForm Data="@registerModel" Submit="@SubmitForm" @ref="form" TItem="RegisterUser">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack>
+
+                    <!-- IMAGE PREVIEW -->
+                    <RadzenStack Gap="1rem">
+                        <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                            @if (@imagePreview != null)
+                            {
+                                <RadzenColumn Size="12" SizeMD="8">
+                                    <img src="@imagePreview" alt="Selected Image Preview" style="max-width: 200px; border-radius: 20%; margin-top: 10px; max-height: 200px;" />
+                                </RadzenColumn>
+                            }
+                        </RadzenRow>
+
+                        <!-- FILE INPUT -->
+                        <RadzenRow AlignItems="Radzen.AlignItems.Center">
+                            @* <RadzenLabel Text="Profile Picture" Component="ProfilePictureUrl" /> *@
+                            <RadzenColumn Size="4" SizeMD="4">
+                                <RadzenLabel Text="Profile Picture" class="font-bold" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="4" SizeMD="4">
+                                <label class="file-upload-wrapper">
+                                    <InputFile id="fileUpload" OnChange="OnImageSelected" accept="image/*" class="file-input-overlay" style="width: 100%; height: 100%" />
+                                    <RadzenButton Icon="backup" Text="Upload Image" Click="@TriggerFileInput" ButtonStyle="ButtonStyle.Primary" style="width: 100%; height: 100%; " />
+                                </label>
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <br />
+
+                        <!-- First Name -->
+                        <!-- RTextBox Value="editUserModel.FirstName" Name="FirstName" /> -->
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="First Name" Component="FirstName" class="font-bold" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextBox @bind-Value="registerModel.FirstName" Name="Name" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+
+                        <!-- Last Name -->
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Last Name" Component="LastName" class="font-bold" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextBox @bind-Value="registerModel.LastName" Name="LastName" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+                        <!--<ValidationMessage For="@(() => registerModel.LastName)" />-->
+
+                        <!-- Email -->
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Email" Component="Email" class="font-bold" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextBox @bind-Value="registerModel.Email" Name="Email" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+
+                        <!-- Phone Number -->
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                                <RadzenLabel Text="Phone Number" Component="PhoneNumber" class="font-bold" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextBox @bind-Value="registerModel.PhoneNumber" Name="PhoneNumber" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+
+                         <!-- Address -->
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Address" Component="Address" class="font-bold" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenTextBox @bind-Value="registerModel.Address" Name="Address" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+
+                        <!-- Password -->
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Password" Component="Password" class="font-bold" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenPassword @bind-Value="registerModel.Password" Name="Password" aria-label="Enter Password" Style="width: 100%;" />
+                    </RadzenColumn>
+                </RadzenRow>
+
+                <!-- Confirm Password -->
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Confirm Password" Component="ConfirmPassword" class="font-bold" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenPassword @bind-Value="registerModel.ConfirmPassword" Name="ConfirmPassword" Style="width: 100%;" />
+                    </RadzenColumn>
+                </RadzenRow>
+
+                    <!-- Date of Birth -->
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Select Date" Component="DatePicker" class="font-bold" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenDatePicker @bind-Value="registerModel.DateOfBirth" DateFormat="dd/MM/yyyy" Max="DateTime.Today" Name="DatePicker" ShowTime="false" ShowCalendarWeek />
+                        </RadzenColumn>
+                    </RadzenRow>
+
+                    <!-- Button Submit -->
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+
+                        </RadzenColumn>
+                        <RadzenColumn Size="3" SizeMD="3">
+                            <RadzenButton Icon="send" IsBusy="@busy" BusyText="Submitting..." Click="@ValidateAndSubmit" Text="Submit" ButtonStyle="ButtonStyle.Primary" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="2" SizeMD="2">
+                            <RadzenButton Click="@Cancel" Text="Cancel" ButtonStyle="ButtonStyle.Danger" />
+                        </RadzenColumn>
+                    </RadzenRow>
+                </RadzenStack>
+        </RadzenStack>
+    </RadzenColumn>
+    </RadzenRow>
+</RadzenTemplateForm>
