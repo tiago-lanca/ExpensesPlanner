@@ -1,4 +1,5 @@
 ﻿using ExpensesPlanner.Client.DTO;
+using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -12,7 +13,7 @@ namespace ExpensesPlanner.Client.Pages.Account
         private List<UserDetails> users;
         IList<UserDetails> selectedUsers;
         [Inject] private DialogService dialogService { get; set; } = default!;
-        [Inject] private UserService userService { get; set; } = default!;
+        [Inject] private IUserService userService { get; set; } = default!;
         protected override async Task OnInitializedAsync()
         {
             await Task.Delay(500);

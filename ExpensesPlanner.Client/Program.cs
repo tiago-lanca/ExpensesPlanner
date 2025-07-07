@@ -1,3 +1,4 @@
+using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Radzen;
@@ -17,8 +18,9 @@ namespace ExpensesPlanner.Client
                 client.BaseAddress = new Uri("https://localhost:8081/");
             });
 
-            builder.Services.AddScoped<ExpenseService>();
-            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<IExpenseService, ExpenseService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ListExpensesService>();
             builder.Services.AddScoped<DialogService>();
 
 

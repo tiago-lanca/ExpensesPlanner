@@ -32,6 +32,9 @@ namespace ExpensesPlanner.Client.DTO
         public byte[]? ProfilePictureUrl { get; set; }
         public RoleType Role { get; set; }
 
-        public List<Expense> ListExpenses { get; set; } = new List<Expense>();
+        public string ListExpensesId { get; set; } = string.Empty;
+
+
+        public bool IsListExpensesEmpty() => ListExpensesId == string.Empty;
     }
 }

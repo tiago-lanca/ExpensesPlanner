@@ -42,7 +42,7 @@ namespace ExpensesPlanner.Client.Models
         [BsonElement("role"), BsonRepresentation(BsonType.String)]
         public RoleType Role { get; set; } = RoleType.User;
 
-        //[BsonElement("listExpenses"), BsonRepresentation(BsonType.Array)]
-        public List<string>? ListExpensesId { get; set; } = new List<string>();
+        [BsonElement("listExpensesId"), BsonRepresentation(BsonType.String)]
+        public string ListExpensesId { get; set; } = string.Empty;
     }
 }

@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using ExpensesPlanner.Client.Interfaces;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,8 +10,23 @@ namespace ExpensesPlanner.Client.Models
         [BsonId]
         [BsonElement("_id"), BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
-        public required decimal Amount { get; set; }
-        public string? Description { get; set; }
-        public required string UserId { get; set; }
+
+        [Required]
+        public decimal Amount { get; set; } = 0.0m;
+
+        [Required]
+        public string Description { get; set; } = string.Empty;
+        public string? ListExpensesId { get; set; } = string.Empty;
+
+
+
+        public static async Task<Expense> CreateExpense(Expense newExpense, string listId, IExpenseService expenseService)
+        {
+            // Giving the ID of the existing ListExpenses to the new expense
+            newExpense.ListExpensesId = listId;
+
+            return await expenseService.CreateExpenseAsync(newExpense);
+        }
+        
     }
 }

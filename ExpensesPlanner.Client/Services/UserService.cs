@@ -1,9 +1,10 @@
 ﻿using ExpensesPlanner.Client.DTO;
+using ExpensesPlanner.Client.Interfaces;
 using System.Net.Http.Json;
 
 namespace ExpensesPlanner.Client.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly HttpClient _httpClient;
 

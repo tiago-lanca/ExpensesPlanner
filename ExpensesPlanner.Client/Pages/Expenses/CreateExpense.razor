@@ -1,9 +1,52 @@
 ﻿@attribute [Route(PagesRoutes.CreateExpense)]
+@rendermode InteractiveAuto
 @using ExpensesPlanner.Client.Models
 
 <h3>Create New Expense</h3>
-@foreach (Expense expense in expenses){
-    <h2>@expense.Description - Value: @expense.Amount</h2>
-}
 
+<RadzenTemplateForm Data="@newExpense" Submit="@SubmitForm" @ref="form" TItem="Expense">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack>                    
+
+                        <!-- Description -->
+                        <!-- RTextBox Value="editUserModel.FirstName" Name="FirstName" /> -->
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Description" Component="Description" class="font-bold" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenTextBox @bind-Value="newExpense.Description" Name="Description" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+
+                        <!-- Amount -->
+                        <RadzenRow AlignItems="AlignItems.Center">
+                            <RadzenColumn Size="12" SizeMD="4">
+                        <RadzenLabel Text="Amount" Component="Amount" class="font-bold" />
+                            </RadzenColumn>
+                            <RadzenColumn Size="12" SizeMD="8">
+                                <RadzenNumeric @bind-Value="newExpense.Amount" Step="0.01" Name="Amount" Style="width: 100%;" />
+                            </RadzenColumn>
+                        </RadzenRow>
+
+                <!-- Button Submit -->
+                <RadzenRow AlignItems="AlignItems.Center">
+                    <RadzenColumn Size="12" SizeMD="4">
+
+                    </RadzenColumn>
+                    <RadzenColumn Size="3" SizeMD="3">
+                        <RadzenButton Icon="send" IsBusy="@busy" BusyText="Submitting..." Click="@ValidateAndSubmit" Text="Create" ButtonStyle="ButtonStyle.Primary" />
+                    </RadzenColumn>
+                    <RadzenColumn Size="2" SizeMD="2">
+                        <RadzenButton Click="@Cancel" Text="Cancel" ButtonType="ButtonType.Button" ButtonStyle="ButtonStyle.Danger" />
+                    </RadzenColumn>
+                </RadzenRow>
+
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+</RadzenTemplateForm>
 

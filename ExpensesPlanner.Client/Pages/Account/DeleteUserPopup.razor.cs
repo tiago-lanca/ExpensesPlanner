@@ -1,4 +1,5 @@
 ﻿using ExpensesPlanner.Client.DTO;
+using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Pages.Expenses;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
@@ -8,7 +9,7 @@ namespace ExpensesPlanner.Client.Pages.Account
 {
     public partial class DeleteUserPopup
     {
-        [Inject] private UserService _userService { get; set; } = default!;
+        [Inject] private IUserService _userService { get; set; } = default!;
         [Inject] private DialogService dialogService { get; set; } = default!;
         [Inject] NotificationService NotificationService { get; set; } = default!;
         [Parameter] public string UserId { get; set; } = string.Empty;

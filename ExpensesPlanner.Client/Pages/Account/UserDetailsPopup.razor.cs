@@ -1,4 +1,5 @@
 ﻿using ExpensesPlanner.Client.DTO;
+using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Models;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
@@ -7,8 +8,9 @@ namespace ExpensesPlanner.Client.Pages.Account
 {
     public partial class UserDetailsPopup
     {
-        [Inject] private UserService _userService { get; set; } = default!;
-        [Inject] private ExpenseService _expenseService { get; set; } = default!;
+        [Inject] private IUserService _userService { get; set; } = default!;
+        [Inject] private IExpenseService _expenseService { get; set; } = default!;
+        [Inject] private ListExpensesService _listExpensesService { get; set; } = default!;
         [Parameter] public string UserId { get; set; } = string.Empty;
         [Parameter] public bool ShowClose { get; set; } = true;
 
@@ -24,7 +26,9 @@ namespace ExpensesPlanner.Client.Pages.Account
             user = await _userService.GetUserByIdAsync(UserId);
             imagePreview = $"data:image/png;base64,{Convert.ToBase64String(user.ProfilePictureUrl)}";
 
-            expenses = await _expenseService.GetAllExpenses();
+            var listExpenses = await _listExpensesService.GetListByUserIdAsync(UserId);
+
+            expenses = listExpenses.Expenses;
         }
     }
 }

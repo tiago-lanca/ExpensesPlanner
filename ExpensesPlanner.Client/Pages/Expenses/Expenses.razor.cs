@@ -1,4 +1,5 @@
-﻿using ExpensesPlanner.Client.Models;
+﻿using ExpensesPlanner.Client.Interfaces;
+using ExpensesPlanner.Client.Models;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 
@@ -6,7 +7,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 {
     public partial class Expenses
     {
-        [Inject] private ExpenseService expenseService { get; set; } = default!;
+        [Inject] private IExpenseService expenseService { get; set; } = default!;
         private List<Expense> expenses;
 
         protected override async Task OnInitializedAsync()

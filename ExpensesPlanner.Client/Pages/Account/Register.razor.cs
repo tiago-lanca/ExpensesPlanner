@@ -1,4 +1,5 @@
 ﻿using ExpensesPlanner.Client.DTO;
+using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -15,7 +16,7 @@ namespace ExpensesPlanner.Client.Pages.Account
 
         private readonly RegisterUser registerModel = new();
         private RadzenTemplateForm<RegisterUser> form;
-        [Inject] private UserService userService { get; set; } = default!;
+        [Inject] private IUserService userService { get; set; } = default!;
         private string imagePreview;
         private string message;
         private bool busy;
@@ -35,13 +36,13 @@ namespace ExpensesPlanner.Client.Pages.Account
                 else
                 {
                     var errorMessage = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine("Erro ao registar: " + errorMessage);
+                    Console.WriteLine("Error creating expense: " + errorMessage);
                     busy = false;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exceção: " + ex.Message);
+                Console.WriteLine("Exception error: " + ex.Message);
             }
         }
 

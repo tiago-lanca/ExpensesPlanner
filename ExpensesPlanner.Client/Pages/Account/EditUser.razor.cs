@@ -1,4 +1,5 @@
 ﻿using ExpensesPlanner.Client.DTO;
+using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -10,7 +11,7 @@ namespace ExpensesPlanner.Client.Pages.Account
 {
     public partial class EditUser
     {
-        [Inject] private UserService _userService { get; set; } = default!;
+        [Inject] private IUserService _userService { get; set; } = default!;
         private UserDetails editUserModel = new();
         private RadzenTemplateForm<UserDetails> form { get; set; } = default!;
         [Inject] private NavigationManager navigation { get; set; } = default!;
