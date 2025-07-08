@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageReference Include="MudBlazor" Version="8.8.0" />
     <ProjectReference Include="..\ExpensesPlanner.Client\ExpensesPlanner.Client.csproj" />
     <PackageReference Include="AspNetCore.Identity.MongoDbCore" Version="6.0.0" />

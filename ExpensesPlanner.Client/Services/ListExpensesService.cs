@@ -6,9 +6,9 @@ namespace ExpensesPlanner.Client.Services
     public class ListExpensesService
     {
         private readonly HttpClient _httpClient;
-        public ListExpensesService(IHttpClientFactory httpClientFactory)
+        public ListExpensesService(HttpClient httpClient)
         {
-            _httpClient = httpClientFactory.CreateClient("Api");
+            _httpClient = httpClient;
         }
 
         public async Task<ListExpenses> CreateListExpensesAsync(ListExpenses listExpenses)

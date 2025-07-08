@@ -1,7 +1,9 @@
+using Blazored.LocalStorage;
 using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Models;
 using ExpensesPlanner.Client.Services;
 using ExpensesPlanner.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Radzen;
 
 namespace ExpensesPlanner
@@ -17,17 +19,24 @@ namespace ExpensesPlanner
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
 
-            builder.Services.AddHttpClient("Api", client =>
+            builder.Services.AddScoped(sp => new HttpClient
             {
-                client.BaseAddress = new Uri("https://localhost:8081/");
+                BaseAddress = new Uri("https://localhost:8081/")
             });
+
+            builder.Services.AddRadzenComponents();
 
             builder.Services.AddScoped<IExpenseService, ExpenseService>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ListExpensesService>();
+            builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<DialogService>();
 
-            builder.Services.AddRadzenComponents();
+            builder.Services.AddAuthorizationCore();
+            builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
+            
+            builder.Services.AddBlazoredLocalStorage();
+
 
             var app = builder.Build();
 

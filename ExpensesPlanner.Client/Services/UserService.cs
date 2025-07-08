@@ -8,9 +8,9 @@ namespace ExpensesPlanner.Client.Services
     {
         private readonly HttpClient _httpClient;
 
-        public UserService(IHttpClientFactory httpClientFactory)
+        public UserService(HttpClient httpClient)
         {
-            _httpClient = httpClientFactory.CreateClient("Api");
+            _httpClient = httpClient;
         }
 
         public async Task<List<UserDetails>> GetAllUsers()
