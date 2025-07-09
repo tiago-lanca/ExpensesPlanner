@@ -15,11 +15,18 @@
 
         <CascadingAuthenticationState>
             <AuthorizeView>
-                <Authorized>
-                <RadzenLabel Text=@($"Bem-vindo, {context.User.Identity.Name}")></RadzenLabel>
+                <Authorized Context="auth">
+                    <br />
+                    <div class="nav-item px-3 d-flex flex-column align-items-center">
+                        <RadzenImage Path="@profilePictureUrl" Style="width: 80px; height: 80px; border-radius: 40%" AlternateText=@auth.User.Identity?.Name />
+                    
+                        <RadzenLabel class="text-white mt-2" Text=@($"Welcome, {auth.User.Identity?.Name}")></RadzenLabel>
+                        <br /><br />
+                    </div>
                 </Authorized>
             </AuthorizeView>
         </CascadingAuthenticationState>
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
@@ -32,33 +39,18 @@
             </NavLink>
         </div>
 
-        <!--<div class="nav-item px-3">
-            <NavLink class="nav-link" href="account/register">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Account
-            </NavLink>
-        </div>-->
-
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="/account/users">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> All Users
             </NavLink>
         </div>
 
-        <!--<div class="nav-item px-3">
-            <RadzenButton class="nav-link" Text="Login" Click="@(() => OpenLoginPopup())">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login 
-            </RadzenButton>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/account/register">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Register
-            </NavLink>
-        </div> -->
         <CascadingAuthenticationState>
             <AuthorizeView>
                 <Authorized>
-                <h3>Tiago</h3>
+                    <RadzenButton class="nav-link" Text="Logout" Click="@(() => Logout())">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Logout
+                    </RadzenButton>
                 </Authorized>
 
 

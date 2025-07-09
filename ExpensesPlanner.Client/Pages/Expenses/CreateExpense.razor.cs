@@ -1,9 +1,11 @@
-﻿using ExpensesPlanner.Client.DTO;
+﻿using Blazored.LocalStorage;
+using ExpensesPlanner.Client.DTO;
 using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Models;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Radzen.Blazor;
+using System.IdentityModel.Tokens.Jwt;
 using static MudBlazor.CategoryTypes;
 
 namespace ExpensesPlanner.Client.Pages.Expenses
@@ -16,9 +18,29 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Inject] private ListExpensesService _listExpensesService { get; set; } = default!;
         [Inject] private IUserService _userService { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
+        [Inject] private ILocalStorageService _localStorage { get; set; } = default!;
         private string Id = "744db02f-de1c-40aa-9ab8-6af1529c5982";
         private bool busy;
 
+
+        protected override async Task OnInitializedAsync()
+        {
+            var token = await _localStorage.GetItemAsync<string>("authToken");
+            if (token is null) { Navigation.NavigateTo("/"); return; }
+
+
+            try
+            {
+                var jwtHandler = new JwtSecurityTokenHandler();
+                var jwtToken = jwtHandler.ReadJwtToken(token);
+                Id = jwtToken.Claims.FirstOrDefault(c => c.Type.Contains("nameidentifier")).Value;
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error parsing token: " + ex.Message);
+            }
+        }
         private async Task SubmitForm()
         {
             try

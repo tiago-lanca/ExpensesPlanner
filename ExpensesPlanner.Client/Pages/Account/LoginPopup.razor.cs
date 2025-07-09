@@ -19,7 +19,7 @@ namespace ExpensesPlanner.Client.Pages.Account
         [Inject] private AuthService AuthService { get; set; } = default!;
         [Inject] private NotificationService NotificationService { get; set; } = default!;
         [Inject] private ILocalStorageService LocalStorage { get; set; } = default!;
-        [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
+        [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
 
         private async Task OnLogin(LoginArgs args)
         {
@@ -40,7 +40,7 @@ namespace ExpensesPlanner.Client.Pages.Account
 
                     await LocalStorage.SetItemAsync("authToken", user.Token);
                     Console.WriteLine($"User token: {user.Token}");
-                    ((JwtAuthenticationStateProvider)AuthenticationStateProvider).NotifyUserAuthentication(user.Token);
+                    await ((JwtAuthenticationStateProvider)AuthStateProvider).MarkUserAsAuthenticatedAsync(user.Token);
 
                     HttpClient.DefaultRequestHeaders.Authorization =
                         new AuthenticationHeaderValue("Bearer", user.Token);

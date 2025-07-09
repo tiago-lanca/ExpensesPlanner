@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using Radzen;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace ExpensesPlanner.Components.Layout
@@ -14,8 +15,36 @@ namespace ExpensesPlanner.Components.Layout
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         [Inject] private DialogService DialogService { get; set; } = default!;
         [Inject] private ILocalStorageService _localStorage { get; set; } = default!;
+        [Inject] private NavigationManager Navigation { get; set; } = default!;
+        [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
+        [Inject] private HttpClient HttpClient { get; set; } = default!;
 
-        private bool IsInteractive = false;
+        private string? profilePictureUrl = string.Empty;
+
+        protected override async Task OnInitializedAsync()
+        {
+            var token = await _localStorage.GetItemAsync<string>("authToken");
+
+            if(!string.IsNullOrWhiteSpace(token))
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, "api/account/user/photo");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var response = await HttpClient.SendAsync(request);
+
+                if(response.IsSuccessStatusCode)
+                {
+                    var photo = await response.Content.ReadAsByteArrayAsync();
+                    var base64Image = Convert.ToBase64String(photo);
+                    profilePictureUrl = $"data:image/png;base64,{base64Image}";
+                }
+                else
+                {
+                    // Handle error, e.g., show notification or log
+                    Console.WriteLine("Failed to fetch user photo.");
+                }
+            }
+        }
 
         public async Task OpenLoginPopup()
         {
@@ -27,13 +56,19 @@ namespace ExpensesPlanner.Components.Layout
                     {
                         //CssClass = "login-dialog",
                         CloseDialogOnOverlayClick = false,
-                        //Width = "100%",
+                        Width = "0",
                         //Height = Settings != null ? Settings.Height : "712px",
                         //Left = Settings != null ? Settings.Left : null,
                         //Top = Settings != null ? Settings.Top : null
                     });
 
             await SaveStateAsync();
+        }
+
+        public async Task Logout()
+        {
+            await ((JwtAuthenticationStateProvider)AuthStateProvider).MarkUserAsLoggedOutAsync();
+            Navigation.NavigateTo("/");
         }
 
         DialogSettings _settings;

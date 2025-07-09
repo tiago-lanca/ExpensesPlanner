@@ -77,6 +77,24 @@ h1:focus {
     font-weight: bold !important;
 }
 
+.rz-dialog-titlebar-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    border: none;
+}
+
+.rz-dialog-titlebar-close:hover {
+    background-color: #d1d1d1;
+    transform: scale(1.1);
+    border-radius: 50%;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+}  
+
 .overlay-login {
     position: fixed;
     inset: 0;
