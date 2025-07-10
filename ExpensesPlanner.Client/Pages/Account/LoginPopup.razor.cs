@@ -42,11 +42,10 @@ namespace ExpensesPlanner.Client.Pages.Account
                     Console.WriteLine($"User token: {user.Token}");
                     await ((JwtAuthenticationStateProvider)AuthStateProvider).MarkUserAsAuthenticatedAsync(user.Token);
 
-                    HttpClient.DefaultRequestHeaders.Authorization =
-                        new AuthenticationHeaderValue("Bearer", user.Token);
 
                     Navigation.NavigateTo(PagesRoutes.AllExpenses);
-                    var currentUser = await AuthService.GetCurrentUserAsync();
+
+                    var currentUser = await AuthService.GetCurrentUserAsync(user.Token);
                 }
                 else
                 {

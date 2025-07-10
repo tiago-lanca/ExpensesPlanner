@@ -34,7 +34,7 @@ namespace ExpensesPlanner.Client.Pages.Account
                    new Dictionary<string, object>() { { "UserId", userID } },
                    new DialogOptions()
                    {
-                       CssClass = "userdetails-dialog",
+                       CssClass = "details-dialog",
                        CloseDialogOnOverlayClick = true,
                        Width = "800px",
                        //Height = Settings != null ? Settings.Height : "712px",

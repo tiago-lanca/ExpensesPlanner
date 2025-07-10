@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using ExpensesPlanner.Client.Pages.Account;
+using ExpensesPlanner.Client.RootPages;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -16,14 +17,16 @@ namespace ExpensesPlanner.Components.Layout
         [Inject] private DialogService DialogService { get; set; } = default!;
         [Inject] private ILocalStorageService _localStorage { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
+        [Inject] private NotificationService NotificationService { get; set; } = default!;
         [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
         [Inject] private HttpClient HttpClient { get; set; } = default!;
 
+        private string token = string.Empty;
         private string? profilePictureUrl = string.Empty;
 
         protected override async Task OnInitializedAsync()
         {
-            var token = await _localStorage.GetItemAsync<string>("authToken");
+            token = await _localStorage.GetItemAsync<string>("authToken");
 
             if(!string.IsNullOrWhiteSpace(token))
             {
@@ -71,7 +74,55 @@ namespace ExpensesPlanner.Components.Layout
             Navigation.NavigateTo("/");
         }
 
-        DialogSettings _settings;
+        public async Task GoToExpenses()
+        {
+            token = await _localStorage.GetItemAsync<string>("authToken");
+
+            if (token is null)
+            {
+                Navigation.NavigateTo("/");
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Warning,
+                    Summary = "Warning",
+                    Detail = "Access denied. Log into an account.",
+                    Duration = 4000,
+                    ShowProgress = true,
+                    CloseOnClick = true,
+                    Payload = DateTime.Now
+                });
+                return;
+            }
+
+            Navigation.NavigateTo(PagesRoutes.AllExpenses);
+            return;
+        }
+
+        public async Task GoToAllUsers()
+        {
+            token = await _localStorage.GetItemAsync<string>("authToken");
+
+            if (token is null)
+            {
+                Navigation.NavigateTo("/");
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Warning,
+                    Summary = "Warning",
+                    Detail = "Access denied. Log into an account.",
+                    Duration = 4000,
+                    ShowProgress = true,
+                    CloseOnClick = true,
+                    Payload = DateTime.Now
+                });
+                return;
+            }
+
+            Navigation.NavigateTo(PagesRoutes.AllUsers);
+            return;
+        }
+
+            DialogSettings _settings;
         public DialogSettings Settings
         {
             get

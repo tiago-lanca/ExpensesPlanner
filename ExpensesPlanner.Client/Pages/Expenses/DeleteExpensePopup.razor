@@ -1,0 +1,5 @@
+﻿
+<RadzenText TextStyle="TextStyle.Subtitle1">Are you sure you want to delete this expense ?</RadzenText>
+<br />
+<RadzenButton Click="@(() => DeleteExpenseAsync())" Text="Yes" Icon="check_circle" ButtonStyle="ButtonStyle.Success" />
+<RadzenButton Click=@(() => CancelDelete()) Text="No" Icon="close" ButtonStyle="ButtonStyle.Danger" />

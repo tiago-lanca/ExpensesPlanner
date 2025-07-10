@@ -1,7 +1,5 @@
 ﻿using ExpensesPlanner.Client.DTO;
 using ExpensesPlanner.Client.Interfaces;
-using ExpensesPlanner.Client.Pages.Expenses;
-using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 

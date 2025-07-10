@@ -1,12 +1,10 @@
 ﻿using Blazored.LocalStorage;
-using ExpensesPlanner.Client.DTO;
 using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Models;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Radzen.Blazor;
 using System.IdentityModel.Tokens.Jwt;
-using static MudBlazor.CategoryTypes;
 
 namespace ExpensesPlanner.Client.Pages.Expenses
 {
@@ -19,7 +17,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Inject] private IUserService _userService { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
         [Inject] private ILocalStorageService _localStorage { get; set; } = default!;
-        private string Id = "744db02f-de1c-40aa-9ab8-6af1529c5982";
+        private string Id = string.Empty;
         private bool busy;
 
 

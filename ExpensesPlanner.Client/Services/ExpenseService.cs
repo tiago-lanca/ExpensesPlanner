@@ -38,12 +38,12 @@ namespace ExpensesPlanner.Client.Services
 
         public Task<HttpResponseMessage> UpdateExpenseAsync(Expense expense)
         {
-            throw new NotImplementedException();
+            return _httpClient.PutAsJsonAsync($"api/expenses/{expense.Id}", expense);
         }
 
-        public Task<HttpResponseMessage> DeleteExpenseAsync(int id)
+        public async Task<HttpResponseMessage> DeleteExpenseAsync(string id)
         {
-            throw new NotImplementedException();
+            return await _httpClient.DeleteAsync($"api/expenses/{id}");
         }
     }
 }

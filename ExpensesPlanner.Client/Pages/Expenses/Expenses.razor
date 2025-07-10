@@ -1,11 +1,12 @@
 ﻿@attribute [Route(PagesRoutes.AllExpenses)]
 @using ExpensesPlanner.Client.Models
 @attribute [StreamRendering(true)]
+@rendermode InteractiveServer
 
 <PageTitle>Expenses</PageTitle>
 
 <h3>Expenses</h3>
-<NavLink class="btn btn-success" href="/expenses/create">Create New Expense</NavLink>
+<RadzenButton Icon="add_circle" Text="Create Expense" Click="@(() => Navigation.NavigateTo(PagesRoutes.CreateExpense))" ButtonStyle="ButtonStyle.Success" />
 <br />
 <br />
 
@@ -19,23 +20,28 @@ else if(expenses.Count == 0)
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Description</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (Expense expense in expenses)
-            {
-                <tr>
-                    <td>@expense.Id</td>
-                    <td>@expense.Description</td>
-                    <td>@expense.Amount</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <RadzenDataGrid AllowFiltering="false" AllowColumnResize="false" AllowAlternatingRows="false" header FilterMode="FilterMode.Advanced" AllowSorting="false" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                    Data="@expenses" TItem="Expense" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedExpenses>
+        <Columns>            
+            <RadzenDataGridColumn Title="Description" Frozen="true" Width="150px" HeaderCssClass="font-bold">
+                <Template Context="expense">
+                    @expense.Description
+                </Template>
+            </RadzenDataGridColumn>
+
+            <RadzenDataGridColumn Property="Amount" Title="Amount" Width="150px" HeaderCssClass="font-bold" >
+                <Template Context="expense">
+                    @(expense.Amount.ToString("C", new System.Globalization.CultureInfo("de-DE")))
+               </Template>
+
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Title="Options" Width="160px" HeaderCssClass="font-bold">
+                <Template Context="expense">
+                    <!-- <RadzenButton Icon="search" Title="Details" Click="@(() => OpenExpenseDetails(expense.Id))" ButtonStyle="ButtonStyle.Success" /> -->
+                    <RadzenButton Icon="settings" Title="Edit" Click="@(() => Navigation.NavigateTo(PagesRoutes.EditUser.Replace("{Id}", expense.Id)))" ButtonStyle="ButtonStyle.Warning" />
+                <RadzenButton Icon="delete_forever" Title="Delete user forever" Click="@(() => OpenDeleteExpenseDialog(expense.Id))" Shade="Shade.Darker" Variant="Variant.Outlined" ButtonStyle="ButtonStyle.Danger" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
 }

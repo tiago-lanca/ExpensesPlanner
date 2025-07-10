@@ -3,6 +3,7 @@ using ExpensesPlanner.Client.DTO;
 using ExpensesPlanner.Client.Models;
 using Microsoft.AspNetCore.Components;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace ExpensesPlanner.Client.Services
@@ -22,8 +23,12 @@ namespace ExpensesPlanner.Client.Services
             return await _httpClient.PostAsJsonAsync("api/auth/login", dto);
         }
 
-        public async Task<ApplicationUser> GetCurrentUserAsync()
+        public async Task<ApplicationUser> GetCurrentUserAsync(string token)
         {
+            // Adds the token to the Authorization header for the request
+            _httpClient.DefaultRequestHeaders.Authorization =
+                        new AuthenticationHeaderValue("Bearer", token);
+
             var response = await _httpClient.GetAsync("api/auth/me");
             if (response.IsSuccessStatusCode)
             {

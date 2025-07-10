@@ -9,6 +9,6 @@ namespace ExpensesPlanner.Client.Interfaces
         Task<Expense> GetExpenseByIdAsync(string id);
         Task<Expense> CreateExpenseAsync(Expense expense);
         Task<HttpResponseMessage> UpdateExpenseAsync(Expense expense);
-        Task<HttpResponseMessage> DeleteExpenseAsync(int id);
+        Task<HttpResponseMessage> DeleteExpenseAsync(string id);
     }
 }

@@ -13,19 +13,19 @@
 <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">
 
-        <CascadingAuthenticationState>
-            <AuthorizeView>
-                <Authorized Context="auth">
-                    <br />
-                    <div class="nav-item px-3 d-flex flex-column align-items-center">
-                        <RadzenImage Path="@profilePictureUrl" Style="width: 80px; height: 80px; border-radius: 40%" AlternateText=@auth.User.Identity?.Name />
+            <CascadingAuthenticationState>
+                <AuthorizeView>
+                    <Authorized Context="auth">
+                        <br />
+                        <div class="nav-item px-3 d-flex flex-column align-items-center">
+                            <RadzenImage Path="@profilePictureUrl" Style="width: 80px; height: 80px; border-radius: 40%" AlternateText=@auth.User.Identity?.Name />
                     
-                        <RadzenLabel class="text-white mt-2" Text=@($"Welcome, {auth.User.Identity?.Name}")></RadzenLabel>
-                        <br /><br />
-                    </div>
-                </Authorized>
-            </AuthorizeView>
-        </CascadingAuthenticationState>
+                            <RadzenLabel class="text-white mt-2" Text=@($"Welcome, {auth.User.Identity?.Name}")></RadzenLabel>
+                            <br /><br />
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+            </CascadingAuthenticationState>
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
@@ -34,13 +34,13 @@
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="expenses">
+            <NavLink class="nav-link" href="#" onclick="@GoToExpenses">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Expenses
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/account/users">
+            <NavLink class="nav-link" href="#" onclick="@GoToAllUsers">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> All Users
             </NavLink>
         </div>
