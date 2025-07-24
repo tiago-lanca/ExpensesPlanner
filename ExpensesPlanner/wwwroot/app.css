@@ -146,6 +146,27 @@ h1:focus {
     border-radius: 15px !important;
 }
 
+.rz-notification-info {
+    border-radius: 5px !important;
+    background-color: blue !important;
+    opacity: 0.8 !important;
+    top: -40px;
+}
+
+.rz-notification-warn {
+    border-radius: 5px !important;
+    background-color: orange !important;
+    opacity: 0.8 !important;
+    top: -40px;
+}
+
+.rz-notification-warn {
+    border-radius: 5px !important;
+    background-color: orange !important;
+    opacity: 0.8 !important;
+    top: -40px;
+}
+
 .rz-notification-warn {
     border-radius: 5px !important;
     background-color: orange !important;

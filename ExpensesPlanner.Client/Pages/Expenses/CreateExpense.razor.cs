@@ -4,6 +4,7 @@ using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Models;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
+using Radzen;
 using Radzen.Blazor;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -18,6 +19,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Inject] private ListExpensesService _listExpensesService { get; set; } = default!;
         [Inject] private IUserService _userService { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
+        [Inject] private NotificationService NotificationService { get; set; } = default!;
         [Inject] private ILocalStorageService _localStorage { get; set; } = default!;
         private List<string> Categories = Enum.GetNames(typeof(ExpenseCategory)).ToList();
         private string Id = string.Empty;
@@ -78,6 +80,17 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                     await Task.Delay(2000);
                     busy = false;
                     Navigation.NavigateTo("/expenses");
+
+                    NotificationService.Notify(new NotificationMessage
+                    {
+                        Severity = NotificationSeverity.Success,
+                        Summary = "Success",
+                        Detail = "New expense created successfully.",
+                        Duration = 4000,
+                        ShowProgress = true,
+                        CloseOnClick = true,
+                        Payload = DateTime.Now
+                    });
                 }
                 else
                 {

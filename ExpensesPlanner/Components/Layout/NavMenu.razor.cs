@@ -72,6 +72,17 @@ namespace ExpensesPlanner.Components.Layout
         {
             await ((JwtAuthenticationStateProvider)AuthStateProvider).MarkUserAsLoggedOutAsync();
             Navigation.NavigateTo("/");
+
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Info,
+                Summary = "Info",
+                Detail = "You have logged out successfully.",
+                Duration = 60000,
+                ShowProgress = true,
+                CloseOnClick = true,
+                Payload = DateTime.Now
+            });
         }
 
         public async Task GoToExpenses()
@@ -81,6 +92,7 @@ namespace ExpensesPlanner.Components.Layout
             if (token is null)
             {
                 Navigation.NavigateTo("/");
+
                 NotificationService.Notify(new NotificationMessage
                 {
                     Severity = NotificationSeverity.Warning,

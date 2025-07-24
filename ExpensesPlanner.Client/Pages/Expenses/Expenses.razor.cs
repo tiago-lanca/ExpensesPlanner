@@ -7,6 +7,8 @@ using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Radzen;
+using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace ExpensesPlanner.Client.Pages.Expenses
@@ -19,9 +21,14 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Inject] private AuthService authService { get; set; } = default!;
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         [Inject] private DialogService dialogService { get; set; } = default!;
-        private List<Expense> expenses { get; set; } = default!;
-        private IList<Expense> selectedExpenses = new List<Expense>();
+        private List<Expense> AllExpenses { get; set; } = default!;
+        private List<Expense> FilteredExpenses { get; set; } = default!;
+        private decimal TotalAmount = 0;
+        private IList<Expense> selectedExpense = new List<Expense>();
         private readonly List<string> Categories = new[] { "All" }.Concat(Enum.GetNames(typeof(ExpenseCategory))).ToList();
+        private List<MonthlyExpense> MonthlyExpenses { get; set; } = new List<MonthlyExpense>();
+
+        private Dictionary<string, List<MonthlyExpense>> dataByCategory = new();
         private string filteredCategory
         {
             get => _filteredCategory;
@@ -29,6 +36,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             {
                 _filteredCategory = value;
                 GetExpensesWithFilters();
+                CalculateTotalAmount();
             }
         }
         private string? _filteredCategory;
@@ -44,12 +52,9 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
             var user = await authService.GetCurrentUserAsync(token);
             userId = user.Id;
+            if (user.Id is null) { AllExpenses = new List<Expense>(); return; }
 
-            if (user.Id is null) { expenses = new List<Expense>(); return; }
-
-            await LoadUserExpensesAsync(user.Id);
-
-            selectedExpenses = expenses.ToList();
+            await LoadAllExpenses(user.Id);           
 
         }
 
@@ -70,7 +75,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                    });
 
             await SaveStateAsync();
-            await LoadUserExpensesAsync(userId);
+            await LoadAllExpenses(userId);
         }
 
         private async Task OpenUpdateExpenseDialog(string expenseId)
@@ -89,31 +94,85 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
             await SaveStateAsync();
 
-            await LoadUserExpensesAsync(userId);
-            
-        }
-
-        //private void OnFilterChanged(string filter)
-        //{
-        //    filteredCategory = filter;
-        //    GetExpensesWithFilters();
-        //}
+            await LoadAllExpenses(userId);           
+        }                
 
         private void GetExpensesWithFilters()
         {
             if (string.IsNullOrEmpty(filteredCategory) || filteredCategory == "All")
             {
-                selectedExpenses = expenses;
+                FilteredExpenses = AllExpenses;
+                StateHasChanged();
             }
             else
+                FilteredExpenses = AllExpenses.Where(e => e.Category == filteredCategory).ToList();
+        }
+
+        private async Task LoadAllExpenses(string userId)
+        {
+            AllExpenses = (await _listExpensesService.GetListByUserIdAsync(userId)).Expenses ?? new List<Expense>();
+            GetExpensesWithFilters();
+            selectedExpense = new List<Expense> { FilteredExpenses.FirstOrDefault() };
+            CalculateTotalAmount();
+
+            GroupByMonthExpenses();
+            GroupExpensesByCategory();            
+        }
+
+        private void GroupByMonthExpenses()
+        {
+            MonthlyExpenses = AllExpenses
+                // Grouping by year and month of the CreationDate
+                .GroupBy(exp => new { exp.CreationDate.Year, exp.CreationDate.Month })
+                // Selecting each group to create a MonthlyExpense object with a specific month and total amount of that month
+                .Select(g => new MonthlyExpense
+                {
+                    Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM yyyy", CultureInfo.InvariantCulture),
+                    TotalAmount = g.Sum(exp => exp.Amount)
+                })
+                // Ordering the MonthlyExpense by their date
+                .OrderBy(x => DateTime.ParseExact(x.Month, "MMM yyyy", CultureInfo.InvariantCulture))
+                .ToList();
+
+        }
+
+        private void GroupExpensesByCategory()
+        {
+            var allMonths = AllExpenses
+                .Select(e => new DateTime(e.CreationDate.Year, e.CreationDate.Month, 1))
+                .Distinct()
+                .OrderBy(day => day)
+                .ToList();
+
+            var allCategories = AllExpenses
+                .Select(e => e.Category)
+                .Distinct()
+                .ToList();
+
+            dataByCategory = new Dictionary<string, List<MonthlyExpense>>();
+
+            foreach (var category in allCategories)
             {
-                selectedExpenses = expenses.Where(e => e.Category == filteredCategory).ToList();
+                var list = new List<MonthlyExpense>();
+
+                foreach (var month in allMonths)
+                {
+                    var total = AllExpenses
+                        .Where(exp => exp.Category == category && exp.CreationDate.Year == month.Year && exp.CreationDate.Month == month.Month)
+                        .Sum(e => e.Amount);
+
+                    list.Add(new MonthlyExpense { Month = month.ToString("MMM yyyy", CultureInfo.InvariantCulture), TotalAmount = total });
+                }
+
+                dataByCategory[category] = list;
             }
         }
 
+        private decimal CalculateTotalAmount()
+            => TotalAmount = FilteredExpenses?.Sum(expense => expense.Amount) ?? 0;
+
         private string GetIcon(string category)
         {
-
             return category switch
             {
                 "Food" => "flatware",
@@ -132,12 +191,10 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             };
         }
 
-        private async Task LoadUserExpensesAsync(string userId)
+        private string FormatAsEUR(object value)
         {
-            expenses = (await _listExpensesService.GetListByUserIdAsync(userId)).Expenses ?? new List<Expense>();
-            GetExpensesWithFilters();
+            return ((double)value).ToString("C", new System.Globalization.CultureInfo("de-DE"));
         }
-        
 
         DialogSettings _settings;
         public DialogSettings Settings
