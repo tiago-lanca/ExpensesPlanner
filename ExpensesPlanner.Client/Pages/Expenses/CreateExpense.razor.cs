@@ -1,9 +1,11 @@
 ﻿using Blazored.LocalStorage;
+using ExpensesPlanner.Client.Enums;
 using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Models;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Radzen.Blazor;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace ExpensesPlanner.Client.Pages.Expenses
@@ -17,6 +19,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Inject] private IUserService _userService { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
         [Inject] private ILocalStorageService _localStorage { get; set; } = default!;
+        private List<string> Categories = Enum.GetNames(typeof(ExpenseCategory)).ToList();
         private string Id = string.Empty;
         private bool busy;
 

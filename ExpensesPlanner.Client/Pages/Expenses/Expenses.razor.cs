@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using ExpensesPlanner.Client.Enums;
 using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Models;
 using ExpensesPlanner.Client.Pages.Account;
@@ -12,17 +13,25 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 {
     public partial class Expenses
     {
-        [Inject] private IExpenseService expenseService { get; set; } = default!;
-        [Inject] private HttpClient HttpClient { get; set; } = default!;
         [Inject] private ListExpensesService _listExpensesService { get; set; } = default!;
         [Inject] private ILocalStorageService _localStorage { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
-        [Inject] private NotificationService NotificationService { get; set; } = default!;
         [Inject] private AuthService authService { get; set; } = default!;
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         [Inject] private DialogService dialogService { get; set; } = default!;
-        private List<Expense> expenses = new List<Expense>();
+        private List<Expense> expenses { get; set; } = default!;
         private IList<Expense> selectedExpenses = new List<Expense>();
+        private readonly List<string> Categories = new[] { "All" }.Concat(Enum.GetNames(typeof(ExpenseCategory))).ToList();
+        private string filteredCategory
+        {
+            get => _filteredCategory;
+            set
+            {
+                _filteredCategory = value;
+                GetExpensesWithFilters();
+            }
+        }
+        private string? _filteredCategory;
         private string? userId;
 
         protected override async Task OnInitializedAsync()
@@ -38,9 +47,10 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
             if (user.Id is null) { expenses = new List<Expense>(); return; }
 
-            await LoadAllUserExpensesAsync(user.Id);
+            await LoadUserExpensesAsync(user.Id);
 
-            selectedExpenses = new List<Expense>() { expenses.FirstOrDefault() };
+            selectedExpenses = expenses.ToList();
+
         }
 
         private async Task OpenDeleteExpenseDialog(string expenseId)
@@ -60,11 +70,73 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                    });
 
             await SaveStateAsync();
-            await LoadAllUserExpensesAsync(userId);
+            await LoadUserExpensesAsync(userId);
         }
 
-        private async Task LoadAllUserExpensesAsync(string userId)
-            => expenses = (await _listExpensesService.GetListByUserIdAsync(userId)).Expenses ?? new List<Expense>();
+        private async Task OpenUpdateExpenseDialog(string expenseId)
+        {
+            await LoadStateAsync();
+            await dialogService.OpenAsync<EditExpensePopup>("Update Expense",
+                   new Dictionary<string, object>() { 
+                       { "ExpenseId", expenseId }, // Pass expenseId to the EditExpensePopup
+                       { "UserId", userId }  // Pass userId to the EditExpensePopup
+                   },
+                   new DialogOptions()
+                   {
+                       CssClass = "details-dialog",
+                       CloseDialogOnOverlayClick = false
+                   });
+
+            await SaveStateAsync();
+
+            await LoadUserExpensesAsync(userId);
+            
+        }
+
+        //private void OnFilterChanged(string filter)
+        //{
+        //    filteredCategory = filter;
+        //    GetExpensesWithFilters();
+        //}
+
+        private void GetExpensesWithFilters()
+        {
+            if (string.IsNullOrEmpty(filteredCategory) || filteredCategory == "All")
+            {
+                selectedExpenses = expenses;
+            }
+            else
+            {
+                selectedExpenses = expenses.Where(e => e.Category == filteredCategory).ToList();
+            }
+        }
+
+        private string GetIcon(string category)
+        {
+
+            return category switch
+            {
+                "Food" => "flatware",
+                "Transport" => "directions_car",
+                "Entertainment" => "movie",
+                "Health" => "health_and_safety",
+                "Gym" => "exercise",
+                "Shopping" => "shopping_bag",
+                "Bills" => "receipt",
+                "Travel" => "travel",
+                "Education" => "school",
+                "Investment" => "finance_mode",
+                "Savings" => "savings",
+                "Other" => "search",
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        private async Task LoadUserExpensesAsync(string userId)
+        {
+            expenses = (await _listExpensesService.GetListByUserIdAsync(userId)).Expenses ?? new List<Expense>();
+            GetExpensesWithFilters();
+        }
         
 
         DialogSettings _settings;

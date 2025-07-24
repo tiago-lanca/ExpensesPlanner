@@ -20,8 +20,20 @@ else if(expenses.Count == 0)
 }
 else
 {
+    <!-- Filter Category -->
+    <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+        <RadzenColumn Size="1" SizeMD="1">
+            <RadzenLabel Text="Category" Component="Category" class="font-bold" />
+        </RadzenColumn>
+        <RadzenColumn Size="2" SizeMD="2">
+            <RadzenDropDown TValue="string" @bind-Value="@filteredCategory" Data="@Categories" Placeholder="Filter category"  Name="Category" Style="width: 100%;" />
+                        @* Change="@(args => OnFilterChanged((string)args))" *@
+        </RadzenColumn>
+    </RadzenRow>
+    <br />
+
     <RadzenDataGrid AllowFiltering="false" AllowColumnResize="false" AllowAlternatingRows="false" header FilterMode="FilterMode.Advanced" AllowSorting="false" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                    Data="@expenses" TItem="Expense" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedExpenses>
+                    Data="@selectedExpenses" TItem="Expense" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedExpenses>
         <Columns>            
             <RadzenDataGridColumn Title="Description" Frozen="true" Width="150px" HeaderCssClass="font-bold">
                 <Template Context="expense">
@@ -33,12 +45,27 @@ else
                 <Template Context="expense">
                     @(expense.Amount.ToString("C", new System.Globalization.CultureInfo("de-DE")))
                </Template>
-
             </RadzenDataGridColumn>
+
+            <RadzenDataGridColumn Property="Category" Title="Category" Width="150px" HeaderCssClass="font-bold">                
+                <Template Context="expense">
+                    <div class="d-flex align-items-center">
+                        <RadzenIcon Icon="@GetIcon(expense.Category)" class="me-2"/>
+                    <span>@expense.Category</span>
+                    </div>
+                </Template>
+            </RadzenDataGridColumn>
+
+            <RadzenDataGridColumn Property="CreationDate" Title="Date" Width="150px" HeaderCssClass="font-bold">
+                <Template Context="expense">
+                    @expense.CreationDate.ToString("dd/MM/yyyy")
+               </Template>
+            </RadzenDataGridColumn>
+
             <RadzenDataGridColumn Title="Options" Width="160px" HeaderCssClass="font-bold">
                 <Template Context="expense">
                     <!-- <RadzenButton Icon="search" Title="Details" Click="@(() => OpenExpenseDetails(expense.Id))" ButtonStyle="ButtonStyle.Success" /> -->
-                    <RadzenButton Icon="settings" Title="Edit" Click="@(() => Navigation.NavigateTo(PagesRoutes.EditUser.Replace("{Id}", expense.Id)))" ButtonStyle="ButtonStyle.Warning" />
+                    <RadzenButton Icon="settings" Title="Edit" Click="@(() => OpenUpdateExpenseDialog(expense.Id))" ButtonStyle="ButtonStyle.Warning" />
                 <RadzenButton Icon="delete_forever" Title="Delete user forever" Click="@(() => OpenDeleteExpenseDialog(expense.Id))" Shade="Shade.Darker" Variant="Variant.Outlined" ButtonStyle="ButtonStyle.Danger" />
                 </Template>
             </RadzenDataGridColumn>

@@ -122,6 +122,12 @@ namespace ExpensesPlanner.Components.Layout
             return;
         }
 
+        public string GetButtonClass(string url)
+        {
+            var currentUrl = Navigation.Uri.Split('?')[0]; // Remove query parameters for comparison
+            return currentUrl.EndsWith(url, StringComparison.OrdinalIgnoreCase) ? "nav-link navmenu-button active" : "nav-link";
+        }
+
             DialogSettings _settings;
         public DialogSettings Settings
         {

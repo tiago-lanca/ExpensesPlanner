@@ -32,6 +32,27 @@
                             </RadzenColumn>
                         </RadzenRow>
 
+                    <!-- Date -->
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Date" Component="DatePicker" class="font-bold" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                            <RadzenDatePicker @bind-Value="newExpense.CreationDate" DateFormat="dd/MM/yyyy" Max="DateTime.Today" Name="DatePicker" ShowTime="false" ShowCalendarWeek />
+                        </RadzenColumn>
+                    </RadzenRow>
+
+                    <!-- Category -->
+                    <RadzenRow AlignItems="AlignItems.Center">
+                        <RadzenColumn Size="12" SizeMD="4">
+                            <RadzenLabel Text="Category" Component="Category" class="font-bold" />
+                        </RadzenColumn>
+                        <RadzenColumn Size="12" SizeMD="8">
+                        <RadzenDropDown @bind-Value="newExpense.Category" Data="@Categories" Placeholder="Select category" Name="Category" Style="width: 100%;" />
+                        </RadzenColumn>
+                    </RadzenRow>
+
+
                 <!-- Button Submit -->
                 <RadzenRow AlignItems="AlignItems.Center">
                     <RadzenColumn Size="12" SizeMD="4">

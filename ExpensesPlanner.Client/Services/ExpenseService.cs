@@ -28,7 +28,7 @@ namespace ExpensesPlanner.Client.Services
 
         public async Task<Expense> GetExpenseByIdAsync(string id)
         {
-            return await _httpClient.GetFromJsonAsync<Expense>($"api/expenses/{id}") ?? new Expense();
+            return await _httpClient.GetFromJsonAsync<Expense>($"api/expenses/id/{id}") ?? new Expense();
         }
 
         public async Task<List<Expense>> GetExpenseByNameAsync(string description)

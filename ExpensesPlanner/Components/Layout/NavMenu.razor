@@ -29,42 +29,39 @@
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                <RadzenIcon Icon="accessibility" Style="margin-right: 8px; " /> <span aria-hidden="true">Home</span>
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="#" onclick="@GoToExpenses">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Expenses
-            </NavLink>
+        <div class="nav-item px-3 no-uppercase">
+            <RadzenButton Icon="receipt" ButtonStyle="ButtonStyle.Light" Variant="Variant.Text"
+                          class=@GetButtonClass(PagesRoutes.AllExpenses) Text="Expenses" Click="@(() => GoToExpenses())" />
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="#" onclick="@GoToAllUsers">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> All Users
-            </NavLink>
+        <div class="nav-item px-3 no-uppercase">
+            <RadzenButton Icon="group" ButtonStyle="ButtonStyle.Light" Variant="Variant.Text"
+                          class="nav-link" Text="All Users" Click="@(() => GoToAllUsers())" />
         </div>
 
         <CascadingAuthenticationState>
             <AuthorizeView>
                 <Authorized>
-                    <RadzenButton class="nav-link" Text="Logout" Click="@(() => Logout())">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Logout
-                    </RadzenButton>
+                    <div class="nav-item px-3 no-uppercase"> 
+                        <RadzenButton Icon="logout" class="nav-link" Text="Logout" ButtonStyle="ButtonStyle.Light" 
+                            Variant="Variant.Text" Click="@(() => Logout())" />
+                    </div>
                 </Authorized>
 
 
                 <NotAuthorized>
-                    <div class="nav-item px-3">
-                        <RadzenButton class="nav-link" Text="Login" Click="@(() => OpenLoginPopup())">
-                            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
-                            </RadzenButton>                    
+                    <div class="nav-item px-3 no-uppercase">
+                        <RadzenButton Icon="person" class="nav-link" Text="Login" ButtonStyle="ButtonStyle.Light" 
+                            Variant="Variant.Text" Click="@(() => OpenLoginPopup())" />
                     </div>
 
-                    <div class="nav-item px-3">
-                        <NavLink class="nav-link" href="/account/register">
-                            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Register
-                        </NavLink>
+                    <div class="nav-item px-3 no-uppercase">
+                        <RadzenButton Icon="person_add" ButtonStyle="ButtonStyle.Light" class="nav-link" Text="Register"
+                            Variant="Variant.Text" Click="(() => Navigation.NavigateTo(PagesRoutes.RegisterUser))" />
                     </div>
                 </NotAuthorized>
             </AuthorizeView>

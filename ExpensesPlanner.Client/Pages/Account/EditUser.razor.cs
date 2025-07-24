@@ -89,7 +89,7 @@ namespace ExpensesPlanner.Client.Pages.Account
             await JS.InvokeVoidAsync("eval", "document.getElementById('fileUpload').click();");
         }
 
-        private async Task Cancel()
+        private void Cancel()
         {
             navigation.NavigateTo("/account/users");
         }

@@ -69,6 +69,23 @@ h1:focus {
     z-index: 0;
 }
 
+.navmenu-button.active {
+    background-color: rgb(67,64,210) !important;
+    font-weight: bold;
+}
+
+.navmenu-button.active:hover {
+    background-color: rgba(45,52,110, 0.7) !important;
+}
+
+.nav-item .rz-button-icon-left {
+    margin-right: 8px;
+}
+
+.no-uppercase .rz-button-text {
+    text-transform: none;
+}
+
 .font-bold {
     font-weight: bold;
 }

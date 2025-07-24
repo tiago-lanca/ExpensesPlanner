@@ -74,6 +74,7 @@ namespace ExpensesPlanner.Client.Pages.Account
                     CloseOnClick = true,
                     Payload = DateTime.Now
                 });
+                Console.WriteLine(ex.InnerException.Message);
             }
         }
 

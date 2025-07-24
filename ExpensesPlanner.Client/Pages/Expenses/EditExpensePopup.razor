@@ -1,0 +1,60 @@
+﻿@using ExpensesPlanner.Client.Models
+@rendermode InteractiveServer
+
+<RadzenTemplateForm Data="@editExpense" Submit="@UpdateExpense" TItem="Expense">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <RadzenRow AlignItems="AlignItems.Center">
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenLabel Text="Description" Component="Description" class="font-bold" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenTextBox @bind-Value="editExpense.Description" Name="Description" Style="width: 100%;" />
+            </RadzenColumn>
+        </RadzenRow>
+
+        <!-- Amount -->
+        <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+            <RadzenColumn Size="12" SizeMD="4">
+            <RadzenLabel Text="Amount (€)" Component="Amount" class="font-bold" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+            <RadzenNumeric @bind-Value="editExpense.Amount" Step="0.01" Name="Amount" Style="width: 100%;" />
+            </RadzenColumn>
+        </RadzenRow>
+
+        <!-- Date -->
+        <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenLabel Text="Date" Component="DatePicker" class="font-bold" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenDatePicker @bind-Value="editExpense.CreationDate" DateFormat="dd/MM/yyyy" Max="DateTime.Today" Name="DatePicker" ShowTime="false" ShowCalendarWeek />
+            </RadzenColumn>
+        </RadzenRow>
+
+        <!-- Category -->
+        <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+            <RadzenColumn Size="12" SizeMD="4">
+                <RadzenLabel Text="Category" Component="Category" class="font-bold" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenDropDown @bind-Value="editExpense.Category" Data="@Categories" Placeholder="Select category" Name="Category" Style="width: 100%;" />
+            </RadzenColumn>
+        </RadzenRow>
+            <br>
+
+
+        <!-- Buttons -->
+         <RadzenRow AlignItems="AlignItems.Center">
+            <RadzenColumn Size="12" SizeMD="4">
+            </RadzenColumn>
+
+            <RadzenColumn Size="3" SizeMD="3">
+                <RadzenButton Icon="save" IsBusy="@busy" BusyText="Saving..." ButtonType="ButtonType.Submit" Text="Save" ButtonStyle="ButtonStyle.Success" />
+            </RadzenColumn>
+            <RadzenColumn Size="3" SizeMD="3">
+                <RadzenButton Click="@Cancel" Text="Cancel" ButtonStyle="ButtonStyle.Danger" />
+            </RadzenColumn>
+        </RadzenRow>
+</RadzenTemplateForm>
