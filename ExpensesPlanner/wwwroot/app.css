@@ -1,5 +1,5 @@
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+html, body, .dx-theme {
+    font-family: 'Roboto', Helvetica, Arial, sans-serif;
 }
 
 a, .btn-link {
@@ -10,6 +10,10 @@ a, .btn-link {
     color: #fff;
     background-color: #1b6ec2;
     border-color: #1861ac;
+}
+
+.dx-theme {
+    font-family: Roboto, Helvetica, Arial, sans-serif;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -42,12 +46,30 @@ h1:focus {
     color: white;
 }
 
-    .blazor-error-boundary::after {
-        content: "An error has occurred."
-    }
+.blazor-error-boundary::after {
+    content: "An error has occurred."
+}
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
+}
+
+@media (max-width: 650px) {
+    .rz-legend-right {
+        right: 0;
+        top: 0;
+        bottom: 0;
+        align-items: center;
+        margin-bottom: 40px;
+    }
+}
+
+ .chart-pie-tooltipsize {
+    white-space: nowrap;
+    padding: 8px 12px;
+    font-size: 14px;
+    z-index: 1000;
+    margin-left: 20px;
 }
 
 .file-upload-wrapper {
@@ -69,6 +91,12 @@ h1:focus {
     z-index: 0;
 }
 
+.vertical-divider {
+    border-left: 1px solid lightgray;
+    height: 40px;
+    margin: 0 10px;
+}
+
 .navmenu-button.active {
     background-color: rgb(67,64,210) !important;
     font-weight: bold;
@@ -86,11 +114,62 @@ h1:focus {
     text-transform: none;
 }
 
+
 .font-bold {
     font-weight: bold;
 }
 
-.rz-grid-table thead th .rz-column-title-content{
+.custom-slider .rz-slider-handle {
+    background-color: green !important;
+    width: 4px !important;
+    height: 20px !important;
+    border-radius: 0 !important;
+    margin-top: 5px !important;
+    margin-inline-start: 0 !important;
+    border-radius: 30px;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: transparent;
+    border: none;
+}
+
+.rz-slider:not(.rz-state-disabled) .rz-slider-handle:hover, .rz-slider:not(.rz-state-disabled) .rz-slider-handle:focus, .rz-slider:not(.rz-state-disabled) .rz-slider-handle:active {
+    box-shadow: 0px 0px 0px 5px rgba(67, 64, 210, 0.12) !important;    
+}
+
+.rz-slider-range {
+    background-color:transparent !important;
+}
+
+.rz-clear-filter{
+    color: red;
+    cursor: pointer;
+}
+
+.rz-clear-filter:hover {
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.rz-icon-arrows {
+    color: black;
+    cursor: pointer;
+    font-size: 20px !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.rz-icon-arrows:hover {        
+    transform: scale(1.25);
+}
+
+.rz-grid-table thead th .rz-column-title-content {
     font-weight: bold !important;
 }
 
@@ -99,7 +178,7 @@ h1:focus {
     top: 10px;
     right: 10px;
     background: transparent;
-    color: white;
+    color: black;
     cursor: pointer;
     border: none;
 }

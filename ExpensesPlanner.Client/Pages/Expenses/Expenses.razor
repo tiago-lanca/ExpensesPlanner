@@ -18,18 +18,26 @@
 else
 {
     <!-- Filter Category -->
-    <RadzenRow AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" class="mt-3">
-        <RadzenColumn>
-            <div class="d-flex align-items-center gap-2">
+    <RadzenRow AlignItems="AlignItems.Center" class="mt-3">
+        <RadzenColumn Size="10" SizeMD="9" class="d-flex align-items-center gap-3 flex-wrap">
                 <RadzenLabel Text="Category" Component="Category" class="font-bold" />
-                <RadzenDropDown TValue="string" @bind-Value="@filteredCategory" Data="@Categories" Placeholder="Filter category"  Name="Category" Style="width: 30%;" />
+                <RadzenDropDown TValue="string" @bind-Value="@filteredCategory" Data="@Categories" Placeholder="Filter category"  Name="Category" Style="width: 15%;" />
                             @* Change="@(args => OnFilterChanged((string)args))" *@
-            </div>
-        </RadzenColumn>
+                <RadzenIcon Icon="close" class="rz-clear-filter" onclick="@ClearCategoryFilter" />
+            <div class="vertical-divider"></div>
+        <!-- Filter Month -->
+                <div class="d-flex align-items-center gap-2">
+                    <RadzenLabel Text="Month" Component="Month" class="font-bold" />
+                    <RadzenDropDown TValue="string" @bind-Value="@filteredMonth" Data="@Months" Placeholder="Filter month" Name="Month" Style="width: 50%;" />
+                    @* Change="@(args => OnFilterChanged((string)args))" *@
+                    <RadzenIcon Icon="close" class="rz-clear-filter" onclick="@ClearMonthFilter" />
+                </div>
 
+            
+          </RadzenColumn>
 
-
-        <RadzenColumn class="d-flex justify-content-end me-5">
+        <!-- Total Amount -->
+        <RadzenColumn Size="12" SizeMD="3" class="text-end mt-2 mt-md-0">
             <span class="me-1">Total Amount: </span>
             <b> @TotalAmount.ToString("C", new System.Globalization.CultureInfo("de-DE"))</b>
         </RadzenColumn>
@@ -76,30 +84,56 @@ else
         </Columns>
     </RadzenDataGrid>
 
-    <RadzenStack Style="width: 100%; max-width: 600px; margin-top: 50px">
-        <RadzenChart> @* SeriesClick=@OnSeriesClick *@            
-                <RadzenPieSeries Data="@AllExpenses" Title="Expenses" CategoryProperty="Category" ValueProperty="Amount" >
-                <RadzenSeriesDataLabels Visible="true" />
-            </RadzenPieSeries>
-            <RadzenValueAxis Formatter="@(value => $"{value:F2}€")" />
-        </RadzenChart>
+    <!-- YEAR -->
+    <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Wrap="FlexWrap.Wrap" Style="margin-top:20px;">
+        <RadzenColumn Size="10" SizeMD="9" class="d-flex align-items-center gap-3">
+            @if(!allYearsExpensesActive)
+            {
+                <RadzenButton Icon="chevron_left" Disabled="@previousYearEnabled" Click="@(() => PreviousYear())" />
+                <RadzenLabel Text="@ExpenseYear.ToString()"></RadzenLabel>
+                <RadzenButton Icon="chevron_right" Disabled="@nextYearEnabled" Click="@(() => NextYear())" />
+            }
+        </RadzenColumn>
+        
+            <RadzenToggleButton Click=@(args => ToggleAllYearsButton()) @bind-Value="allYearsExpensesActive" Icon="check" ToggleIcon="close"
+                                ButtonStyle="ButtonStyle.Success" ToggleButtonStyle="ButtonStyle.Danger" Text="All Years">
+            </RadzenToggleButton>
+
     </RadzenStack>
 
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Style="margin-top: 50px; margin-bottom: 50px;">        
-        <RadzenChart Style="width:100%">
-            @foreach (var category in dataByCategory.Keys)
-            {
-                <RadzenStackedColumnSeries Data="@dataByCategory[category]" CategoryProperty="Month" Title="@category" ValueProperty="TotalAmount">
-                    <RadzenSeriesDataLabels Visible="false" />
-                </RadzenStackedColumnSeries>
 
-                <RadzenColumnOptions Radius="5" />
-                <RadzenCategoryAxis Padding="20" />
-                <RadzenValueAxis Formatter="@FormatAsEUR">
-                    <RadzenGridLines Visible="true" />
-                <RadzenAxisTitle Text="Amount in EUR" />
-            </RadzenValueAxis>
-            }
-        </RadzenChart>
+    <!-- Pie Graphic Expenses -->
+    <RadzenStack Style="margin-top: 50px;" >
+        <div class="chart-pie-tooltipsize">
+            @if (FilteredExpenses.Count != 0)
+            {
+                <RadzenChart Style="width: 100%; max-width: 500px; ">
+                    @* SeriesClick=@OnSeriesClick *@            
+                    <RadzenPieSeries Data="@FilteredExpenses" Title="Expenses" CategoryProperty="Category" ValueProperty="Amount" >
+                    <RadzenSeriesDataLabels Visible="true" />
+                </RadzenPieSeries>
+                <RadzenValueAxis Formatter="@(value => $"{value:F2}€")" />
+            </RadzenChart>
+            } 
+        </div>
+    </RadzenStack>
+
+    <!-- StackedColumns Graphic Expenses -->
+    <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="JustifyContent.Start" Style="overflow-x:auto; width: 100%; margin-top: 50px; margin-bottom: 50px;">
+        <RadzenChart Style="min-width: 600px; width: 100%;" @key="@chartKey">
+                @foreach (var category in dataByCategory.Keys)
+                {
+                    <RadzenStackedColumnSeries Data="@dataByCategory[category]" CategoryProperty="Month" Title="@category" ValueProperty="TotalAmount">
+                        <RadzenSeriesDataLabels Visible="false" />
+                    </RadzenStackedColumnSeries>
+
+                    <RadzenColumnOptions Radius="5" />
+                    <RadzenCategoryAxis Padding="20" />
+                    <RadzenValueAxis Formatter="@FormatAsEUR">
+                        <RadzenGridLines Visible="true" />
+                    <RadzenAxisTitle Text="Amount in EUR" />
+                </RadzenValueAxis>
+                }
+            </RadzenChart>
     </RadzenStack>
 }

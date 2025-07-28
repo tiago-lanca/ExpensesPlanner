@@ -5,12 +5,12 @@
 @rendermode InteractiveServer
 
 
-<RadzenStack Gap="1rem" Orientation="Orientation.Vertical" JustifyContent="JustifyContent.SpaceBetween" Style="height: 100%;">
+<RadzenStack Gap="1rem" Orientation="Radzen.Orientation.Vertical" JustifyContent="JustifyContent.SpaceBetween" Style="height: 100%;">
     <RadzenStack>
         <RadzenRow>
             <RadzenColumn Size="12" SizeMD="6" class="rz-p-4 rz-border-radius-1" Style="border: var(--rz-grid-cell-border)">
                 <RadzenText TextStyle="TextStyle.Subtitle1">User</RadzenText>
-                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center">
+                <RadzenStack Orientation="Radzen.Orientation.Horizontal" AlignItems="AlignItems.Center">
                     <RadzenImage Path="@imagePreview" Style="width: 80px; height: 80px; border-radius: 50%" AlternateText="@(user?.FirstName + " " + user?.LastName)" />
                     <RadzenStack Gap="0" class="rz-text-truncate">
                         <RadzenText TextStyle="TextStyle.Overline" class="rz-mt-2 rz-my-0" Style="color: var(--rz-text-tertiary-color);">Name</RadzenText>
@@ -39,7 +39,7 @@
 <br />
 
 <!-- Expenses Details of the user -->
-        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center">
+<RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" AlignItems="AlignItems.Center">
             <RadzenText TextStyle="TextStyle.Subtitle1" class="rz-m-0">Expenses</RadzenText>
 @*             <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@($"{String.Format(new System.Globalization.CultureInfo("en-US"), "{0:C}", order.Freight)}") />
  *@        </RadzenStack>
@@ -55,6 +55,6 @@
             </Columns>
         </RadzenDataGrid>
 <br />
-<RadzenStack Visible="@ShowClose" Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem">
+<RadzenStack Visible="@ShowClose" Orientation="Radzen.Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem">
     <RadzenButton Click="@((args) => DialogService.Close(true))" Variant="Variant.Flat" Text="Close" Style="width: 120px" />
 </RadzenStack>

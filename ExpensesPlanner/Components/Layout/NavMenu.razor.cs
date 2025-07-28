@@ -78,7 +78,7 @@ namespace ExpensesPlanner.Components.Layout
                 Severity = NotificationSeverity.Info,
                 Summary = "Info",
                 Detail = "You have logged out successfully.",
-                Duration = 60000,
+                Duration = 4000,
                 ShowProgress = true,
                 CloseOnClick = true,
                 Payload = DateTime.Now
@@ -131,6 +131,31 @@ namespace ExpensesPlanner.Components.Layout
             }
 
             Navigation.NavigateTo(PagesRoutes.AllUsers);
+            return;
+        }
+
+        public async Task GoToSimulator()
+        {
+            token = await _localStorage.GetItemAsync<string>("authToken");
+
+            if (token is null)
+            {
+                Navigation.NavigateTo("/");
+
+                NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Warning,
+                    Summary = "Warning",
+                    Detail = "Access denied. Log into an account.",
+                    Duration = 4000,
+                    ShowProgress = true,
+                    CloseOnClick = true,
+                    Payload = DateTime.Now
+                });
+                return;
+            }
+
+            Navigation.NavigateTo(PagesRoutes.Simulator);
             return;
         }
 

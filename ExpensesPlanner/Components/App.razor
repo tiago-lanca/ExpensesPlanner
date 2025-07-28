@@ -10,9 +10,12 @@
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="ExpensesPlanner.styles.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />    
+    <link rel="icon" type="image/png" href="favicon.png" />
+
     <RadzenTheme Theme="material" @rendermode="InteractiveAuto" />
     <HeadOutlet @rendermode="new InteractiveServerRenderMode(prerender: false)"/>
+    @DxResourceManager.RegisterTheme(DevExpress.Blazor.Themes.Fluent)
+    @DxResourceManager.RegisterScripts()
 </head>
 
 
@@ -21,6 +24,9 @@
         <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
         <script src="_framework/blazor.web.js"></script>
         <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
+        <script>
+            window.blazorGetWindowWidth = () => window.innerWidth;
+        </script>
     </body>
 
 

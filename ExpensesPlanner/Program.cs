@@ -18,6 +18,7 @@ namespace ExpensesPlanner
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents()
                 .AddInteractiveWebAssemblyComponents();
+            builder.Services.AddDevExpressBlazor();
 
             builder.Services.AddScoped(sp => new HttpClient
             {

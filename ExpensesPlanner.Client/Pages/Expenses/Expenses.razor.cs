@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Radzen;
 using System.Globalization;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ExpensesPlanner.Client.Pages.Expenses
 {
@@ -24,12 +26,19 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         private List<Expense> AllExpenses { get; set; } = default!;
         private List<Expense> FilteredExpenses { get; set; } = default!;
         private decimal TotalAmount = 0;
+        private string chartKey = Guid.NewGuid().ToString();
+        private bool showDataLabels = true;
+        private bool allYearsExpensesActive = false;
+        private bool previousYearEnabled => ExpenseYear <= DateTime.Now.Year - 5;
+        private bool nextYearEnabled => ExpenseYear >= DateTime.Now.Year;
+        private int ExpenseYear = DateTime.Now.Year;
         private IList<Expense> selectedExpense = new List<Expense>();
-        private readonly List<string> Categories = new[] { "All" }.Concat(Enum.GetNames(typeof(ExpenseCategory))).ToList();
+        private readonly List<string> Categories = Enum.GetNames(typeof(ExpenseCategory)).ToList();
+        private readonly List<string> Months = Enum.GetNames(typeof(Months)).ToList();
         private List<MonthlyExpense> MonthlyExpenses { get; set; } = new List<MonthlyExpense>();
 
         private Dictionary<string, List<MonthlyExpense>> dataByCategory = new();
-        private string filteredCategory
+        private string? filteredCategory
         {
             get => _filteredCategory;
             set
@@ -40,6 +49,17 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             }
         }
         private string? _filteredCategory;
+        private string? filteredMonth
+        {
+            get => _filteredMonth;
+            set
+            {
+                _filteredMonth = value;
+                GetExpensesWithFilters();
+                CalculateTotalAmount();
+            }
+        }
+        private string? _filteredMonth;
         private string? userId;
 
         protected override async Task OnInitializedAsync()
@@ -54,8 +74,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             userId = user.Id;
             if (user.Id is null) { AllExpenses = new List<Expense>(); return; }
 
-            await LoadAllExpenses(user.Id);           
-
+            await LoadExpenses(user.Id);           
         }
 
         private async Task OpenDeleteExpenseDialog(string expenseId)
@@ -75,7 +94,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                    });
 
             await SaveStateAsync();
-            await LoadAllExpenses(userId);
+            await LoadExpenses(userId);
         }
 
         private async Task OpenUpdateExpenseDialog(string expenseId)
@@ -94,57 +113,65 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
             await SaveStateAsync();
 
-            await LoadAllExpenses(userId);           
+            await LoadExpenses(userId);           
         }                
 
         private void GetExpensesWithFilters()
         {
-            if (string.IsNullOrEmpty(filteredCategory) || filteredCategory == "All")
-            {
+            if (allYearsExpensesActive)
                 FilteredExpenses = AllExpenses;
-                StateHasChanged();
-            }
             else
-                FilteredExpenses = AllExpenses.Where(e => e.Category == filteredCategory).ToList();
+            {
+                FilteredExpenses = AllExpenses
+                    .Where(exp =>
+                        (filteredCategory == null || exp.Category == filteredCategory) &&
+                        (filteredMonth == null || exp.CreationDate.ToString("MMM", CultureInfo.InvariantCulture) == filteredMonth) &&
+                        (exp.CreationDate.Year == ExpenseYear)
+                    )
+                    .ToList();
+            }
+
+            SelectFirstExpense();
+            CalculateTotalAmount();
+
+            GroupExpensesByCategory();
         }
 
-        private async Task LoadAllExpenses(string userId)
+        private async Task LoadExpenses(string userId)
         {
             AllExpenses = (await _listExpensesService.GetListByUserIdAsync(userId)).Expenses ?? new List<Expense>();
             GetExpensesWithFilters();
-            selectedExpense = new List<Expense> { FilteredExpenses.FirstOrDefault() };
-            CalculateTotalAmount();
-
-            GroupByMonthExpenses();
-            GroupExpensesByCategory();            
         }
 
         private void GroupByMonthExpenses()
         {
-            MonthlyExpenses = AllExpenses
-                // Grouping by year and month of the CreationDate
-                .GroupBy(exp => new { exp.CreationDate.Year, exp.CreationDate.Month })
-                // Selecting each group to create a MonthlyExpense object with a specific month and total amount of that month
-                .Select(g => new MonthlyExpense
-                {
-                    Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM yyyy", CultureInfo.InvariantCulture),
-                    TotalAmount = g.Sum(exp => exp.Amount)
-                })
-                // Ordering the MonthlyExpense by their date
-                .OrderBy(x => DateTime.ParseExact(x.Month, "MMM yyyy", CultureInfo.InvariantCulture))
-                .ToList();
-
+            //MonthlyExpenses = FilteredExpenses
+            //    // Filtering expenses by the selected year
+            //    .Where(exp => exp.CreationDate.Year == ExpenseYear)
+            //    // Grouping by year and month of the CreationDate
+            //    .GroupBy(exp => new { exp.CreationDate.Year, exp.CreationDate.Month })
+            //    // Selecting each group to create a MonthlyExpense object with a specific month and total amount of that month
+            //    .Select(g => new MonthlyExpense
+            //    {
+            //        Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM yyyy", CultureInfo.InvariantCulture),
+            //        TotalAmount = g.Sum(exp => exp.Amount)
+            //    })
+            //    // Ordering the MonthlyExpense by their date
+            //    .OrderBy(x => DateTime.ParseExact(x.Month, "MMM yyyy", CultureInfo.InvariantCulture))
+            //    .ToList();
         }
 
         private void GroupExpensesByCategory()
         {
-            var allMonths = AllExpenses
+            var allMonths = FilteredExpenses
+                .Where(exp => allYearsExpensesActive || exp.CreationDate.Year == ExpenseYear)
                 .Select(e => new DateTime(e.CreationDate.Year, e.CreationDate.Month, 1))
                 .Distinct()
                 .OrderBy(day => day)
                 .ToList();
 
-            var allCategories = AllExpenses
+            var allCategories = FilteredExpenses
+                .Where(exp => allYearsExpensesActive || exp.CreationDate.Year == ExpenseYear)
                 .Select(e => e.Category)
                 .Distinct()
                 .ToList();
@@ -157,19 +184,49 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
                 foreach (var month in allMonths)
                 {
-                    var total = AllExpenses
+                    var total = FilteredExpenses
                         .Where(exp => exp.Category == category && exp.CreationDate.Year == month.Year && exp.CreationDate.Month == month.Month)
                         .Sum(e => e.Amount);
 
-                    list.Add(new MonthlyExpense { Month = month.ToString("MMM yyyy", CultureInfo.InvariantCulture), TotalAmount = total });
-                }
 
+                    list.Add(new MonthlyExpense { Month = month.ToString("MMM yyyy", CultureInfo.InvariantCulture), TotalAmount = total });
+
+                }
+                
                 dataByCategory[category] = list;
             }
+
+            // Force recreation of StackedColumns
+            chartKey = Guid.NewGuid().ToString();
+            StateHasChanged();
+        }
+
+        private void SelectFirstExpense() => selectedExpense = new List<Expense> { FilteredExpenses.FirstOrDefault() };
+
+        private void ToggleAllYearsButton() 
+        { 
+            allYearsExpensesActive = !allYearsExpensesActive; 
+            GetExpensesWithFilters(); 
+        }
+        private async Task PreviousYear()
+        {
+            ExpenseYear -= 1;
+            GetExpensesWithFilters();
+        }
+
+        private async Task NextYear()
+        {
+            ExpenseYear += 1;
+            GetExpensesWithFilters();
         }
 
         private decimal CalculateTotalAmount()
             => TotalAmount = FilteredExpenses?.Sum(expense => expense.Amount) ?? 0;
+
+        private void ClearCategoryFilter() { filteredCategory = null; LoadExpenses(userId); }
+
+
+        private void ClearMonthFilter() { filteredMonth = null; LoadExpenses(userId); }
 
         private string GetIcon(string category)
         {
@@ -196,6 +253,16 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             return ((double)value).ToString("C", new System.Globalization.CultureInfo("de-DE"));
         }
 
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+               var width = await JSRuntime.InvokeAsync<int>("blazorGetWindowWidth");
+               showDataLabels = width >= 650; // Show data labels only on larger screens
+               StateHasChanged();
+            }
+        }
         DialogSettings _settings;
         public DialogSettings Settings
         {

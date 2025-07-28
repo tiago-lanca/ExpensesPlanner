@@ -13,6 +13,7 @@ namespace ExpensesPlanner.Client
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.Services.AddRadzenComponents();
+            builder.Services.AddDevExpressBlazor();
 
             builder.Services.AddScoped(sp => new HttpClient
             {

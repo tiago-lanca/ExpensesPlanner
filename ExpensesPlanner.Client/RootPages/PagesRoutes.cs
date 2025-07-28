@@ -11,5 +11,6 @@
         public const string AllExpenses = "expenses";
         public const string CreateExpense = "expenses/create";
         public const string EditExpense = "expenses/{Id}";
+        public const string Simulator = "expenses/simulator";
     }
 }
