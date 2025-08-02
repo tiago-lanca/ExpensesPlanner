@@ -1,5 +1,4 @@
 ﻿@attribute [Route(PagesRoutes.AllExpenses)]
-@using ExpensesPlanner.Client.Models
 @attribute [StreamRendering(true)]
 @rendermode InteractiveServer
 
@@ -62,7 +61,7 @@ else
             <RadzenDataGridColumn Property="Category" Title="Category" Width="150px" HeaderCssClass="font-bold">                
                 <Template Context="expense">
                     <div class="d-flex align-items-center">
-                        <RadzenIcon Icon="@GetIcon(expense.Category)" class="me-2"/>
+                        <RadzenIcon Icon="@IconHelper.GetIconForCategory(expense.Category)" class="me-2"/>
                     <span>@expense.Category</span>
                     </div>
                 </Template>

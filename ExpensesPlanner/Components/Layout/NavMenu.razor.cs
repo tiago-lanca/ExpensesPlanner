@@ -4,7 +4,9 @@ using ExpensesPlanner.Client.RootPages;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
+using MongoDB.Driver;
 using Radzen;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -23,6 +25,7 @@ namespace ExpensesPlanner.Components.Layout
 
         private string token = string.Empty;
         private string? profilePictureUrl = string.Empty;
+        private string? currentUrl;
 
         protected override async Task OnInitializedAsync()
         {
@@ -40,11 +43,15 @@ namespace ExpensesPlanner.Components.Layout
                     var photo = await response.Content.ReadAsByteArrayAsync();
                     var base64Image = Convert.ToBase64String(photo);
                     profilePictureUrl = $"data:image/png;base64,{base64Image}";
+
+                    currentUrl = Navigation.Uri;
+                    Navigation.LocationChanged += HandleLocationChanged;
                 }
                 else
                 {
                     // Handle error, e.g., show notification or log
-                    Console.WriteLine("Failed to fetch user photo.");
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Failed to fetch user photo. Status: {response.StatusCode}, Error: {errorMessage}");
                 }
             }
         }
@@ -106,7 +113,9 @@ namespace ExpensesPlanner.Components.Layout
                 return;
             }
 
+            StateHasChanged();
             Navigation.NavigateTo(PagesRoutes.AllExpenses);
+            
             return;
         }
 
@@ -130,11 +139,13 @@ namespace ExpensesPlanner.Components.Layout
                 return;
             }
 
+            StateHasChanged();
             Navigation.NavigateTo(PagesRoutes.AllUsers);
+
             return;
         }
 
-        public async Task GoToSimulator()
+        public async Task GoToMyFinances()
         {
             token = await _localStorage.GetItemAsync<string>("authToken");
 
@@ -155,14 +166,27 @@ namespace ExpensesPlanner.Components.Layout
                 return;
             }
 
-            Navigation.NavigateTo(PagesRoutes.Simulator);
+            StateHasChanged();
+            Navigation.NavigateTo(PagesRoutes.MyFinances);
+
             return;
         }
 
         public string GetButtonClass(string url)
         {
             var currentUrl = Navigation.Uri.Split('?')[0]; // Remove query parameters for comparison
-            return currentUrl.EndsWith(url, StringComparison.OrdinalIgnoreCase) ? "nav-link navmenu-button active" : "nav-link";
+            return currentUrl.EndsWith(url, StringComparison.OrdinalIgnoreCase) ? "nav-link navmenu-button active" : "nav-link";            
+        }
+
+        private void HandleLocationChanged(object? sender, LocationChangedEventArgs e)
+        {
+            currentUrl = e.Location;
+            StateHasChanged();
+        }
+
+        public void Dispose()
+        {
+            Navigation.LocationChanged -= HandleLocationChanged;
         }
 
             DialogSettings _settings;

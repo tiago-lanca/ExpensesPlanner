@@ -1,0 +1,141 @@
+﻿
+@attribute [Route(PagesRoutes.MyFinances)]
+@rendermode InteractiveAuto
+
+    <h3 >My Finances</h3>
+
+@if (IsCategoryLimitListEmpty)
+{
+    <h4>Create limits on your expenses to start to manage your finances.</h4>
+}
+
+       
+    
+<RadzenStack Wrap="FlexWrap.Wrap" style="margin-top:50px;" Orientation="Radzen.Orientation.Horizontal" Gap="100px">
+    <DxStackLayout Orientation="DevExpress.Blazor.Orientation.Vertical" ItemSpacing="5px">
+        <Items>
+
+            <!-- Add Category Finance Limit -->
+            <DxStackLayoutItem>
+                <Template>
+                    <div style="display: flex; align-items: center; gap: 10px; ">
+
+                        <DxDropDownButton RenderStyle="ButtonRenderStyle.Secondary" Text="@selectedAddCategory" ItemClick="OnSelectedCategory" 
+                                          CssClass="me-1" RenderStyleMode="ButtonRenderStyleMode.Contained">
+                            <ChildContent>
+                                @if (selectedAddCategory != dropdownCategoryDefaultMessage)
+                                {
+                                    <span class="material-symbols-outlined me-2">@IconHelper.GetIconForCategory(selectedAddCategory)</span>
+                                }
+                                @selectedAddCategory
+                                <span class="material-symbols-outlined dropdown-caret-icon" style="margin-left: auto;">
+                                    keyboard_arrow_down
+                                </span>
+                                
+                            </ChildContent>
+
+                           <Items>
+                                    @foreach(var category in availableCategories)
+                                    {
+                                        <DxDropDownButtonItem Text="@category">
+                                            <span class="material-symbols-outlined me-2">
+                                                @IconHelper.GetIconForCategory(category)
+                                            </span>@category
+                                        </DxDropDownButtonItem>
+                                    }
+                            </Items>
+                        </DxDropDownButton>
+
+                        <DxButton RenderStyle="ButtonRenderStyle.Primary" Text="Add" Click="(() => AddCategoryLimit(selectedAddCategory))" RenderStyleMode="ButtonRenderStyleMode.Contained" />
+                    </div>
+                </Template>
+            </DxStackLayoutItem>
+            <!-- -->
+
+            <!-- Month and Year -->
+            <DxStackLayoutItem>
+                <Template>
+                    <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
+                        <RadzenColumn Size="10" SizeMD="9" class="d-flex align-items-center gap-3">
+                                <RadzenButton Icon="chevron_left"  />
+                                <RadzenLabel Text="July 2025" Style="font-weight: bold;" />
+                                <RadzenButton Icon="chevron_right"  />                    
+                        </RadzenColumn>
+                    </RadzenStack>
+                </Template>
+            </DxStackLayoutItem>
+    
+            <!-- ProgressBar Expenses Limits -->
+            
+                <DxStackLayoutItem>
+
+                    <Template>
+                    @foreach (var category in categoryLimitsList)
+                    {
+                    <div class="category-limit-item">
+                        <RadzenIcon Style="margin-top:45px" Icon="@IconHelper.GetIconForCategory(category.Category)" />                            
+                        <div style="flex: 1;">
+
+                            <!-- Name of Category and Close -->
+                            <div class="progressBar-smallscreen" style="bottom: 35px;">
+                                <span style="position:absolute; left: 0; font-size: 16px;">@category.Category</span>
+                                <DxButton CssClass="absolute-right dx-button-noborder" Click="(() => RemoveCategoryLimitItem(category))">
+                                      <ChildContent>
+                                          <span class="material-symbols-outlined">close</span>
+                                      </ChildContent>    
+                                </DxButton>
+                            </div>
+                            <!-- -->
+
+                            <!-- ProgressBar -->
+                            <div class="progressBar-smallscreen">
+                                @{
+                                    bool isOverLimit = expensesByCategory[category.Category] > category.Limit;
+                                    progressBarClass = isOverLimit ? "dxprogressbar-responsive progressbar-red" : "dxprogressbar-responsive progressbar-blue";
+                                }
+                                <DxProgressBar Value="@Convert.ToDouble(expensesByCategory[category.Category])" MinValue="0" MaxValue="1200" Type="ProgressBarType.Horizontal" Size="100%" Thickness="10px" ShowLabel="false"
+                                           CssClass="@progressBarClass" />
+                                    <RadzenSlider TValue="int" Value="@category.Limit" Step="10" Change="@(args => OnLimitValueChanged(category, args))"
+                                              Min="0" Max="1200" Class="custom-slider" />
+
+
+                                <div style="position: relative; top: 15px; font-size: 13px;">
+                                    <span style="position: absolute; left: 0; color: gray">
+                                        @expensesByCategory[category.Category] € (X%)
+                                    </span>
+                                    <span style="position: absolute; right: 0; color: mediumseagreen; font-weight: bold">
+                                            Limit: @category.Limit € (@GetLimitPercentage(category.Limit)%)
+                                    </span>    
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+
+                    <!-- Save Changes Button -->
+                    @if (hasChanges)
+                    {
+                        <DxButton RenderStyle="ButtonRenderStyle.Success" CssClass="savechanges-btn" Click="UpdateCategoryLimits" RenderStyleMode="ButtonRenderStyleMode.Contained">
+                            <ChildContent>
+                                <span class="material-symbols-outlined">save</span>
+                                <span class="ms-2">Save Changes</span>
+                            </ChildContent>
+                        </DxButton>
+                    }
+                    <!-- -->
+                </Template> 
+            </DxStackLayoutItem>
+            
+        </Items>
+    </DxStackLayout>
+
+    <DxStackLayout Orientation="DevExpress.Blazor.Orientation.Vertical" ItemSpacing="10px">
+        <Items>
+            <DxStackLayoutItem>
+                <Template>
+                    <DxButton RenderStyle="ButtonRenderStyle.Primary" RenderStyleMode="ButtonRenderStyleMode.Contained" Text="Graphics" />
+                </Template>
+            </DxStackLayoutItem>
+        </Items>
+    </DxStackLayout>
+</RadzenStack>

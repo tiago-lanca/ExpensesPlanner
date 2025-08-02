@@ -21,7 +21,7 @@ namespace ExpensesPlanner.Client.Models
         public DateTime CreationDate { get; set; } = DateTime.Now;
 
         [Required]
-        public string? Category { get; set; }
+        public string? Category { get; set; } = string.Empty;
         public string? ListExpensesId { get; set; } = string.Empty;
 
 

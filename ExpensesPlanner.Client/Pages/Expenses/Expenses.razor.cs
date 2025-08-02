@@ -20,7 +20,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Inject] private ListExpensesService _listExpensesService { get; set; } = default!;
         [Inject] private ILocalStorageService _localStorage { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
-        [Inject] private AuthService authService { get; set; } = default!;
+        [Inject] private AuthService AuthService { get; set; } = default!;
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         [Inject] private DialogService dialogService { get; set; } = default!;
         private List<Expense> AllExpenses { get; set; } = default!;
@@ -70,7 +70,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
             await Task.Delay(500);
 
-            var user = await authService.GetCurrentUserAsync(token);
+            var user = await AuthService.GetCurrentUserAsync(token);
             userId = user.Id;
             if (user.Id is null) { AllExpenses = new List<Expense>(); return; }
 
@@ -227,26 +227,6 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
 
         private void ClearMonthFilter() { filteredMonth = null; LoadExpenses(userId); }
-
-        private string GetIcon(string category)
-        {
-            return category switch
-            {
-                "Food" => "flatware",
-                "Transport" => "directions_car",
-                "Entertainment" => "movie",
-                "Health" => "health_and_safety",
-                "Gym" => "exercise",
-                "Shopping" => "shopping_bag",
-                "Bills" => "receipt",
-                "Travel" => "travel",
-                "Education" => "school",
-                "Investment" => "finance_mode",
-                "Savings" => "savings",
-                "Other" => "search",
-                _ => throw new NotImplementedException(),
-            };
-        }
 
         private string FormatAsEUR(object value)
         {

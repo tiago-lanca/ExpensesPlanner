@@ -25,6 +25,7 @@ namespace ExpensesPlanner.Client
             builder.Services.AddScoped<ListExpensesService>();
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<DialogService>();
+            builder.Services.AddScoped<CategoryLimitService>();
 
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
