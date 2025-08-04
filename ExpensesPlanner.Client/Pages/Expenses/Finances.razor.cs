@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using DevExpress.Blazor;
+using ExpensesPlanner.Client.DTO;
 using ExpensesPlanner.Client.Enums;
 using ExpensesPlanner.Client.Models;
 using ExpensesPlanner.Client.Pages.Account;
@@ -7,6 +8,7 @@ using ExpensesPlanner.Client.Services;
 using ExpensesPlanner.Client.Utilities;
 using Microsoft.AspNetCore.Components;
 using Radzen;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace ExpensesPlanner.Client.Pages.Expenses
@@ -19,20 +21,29 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Inject] private AuthService authService { get; set; } = default!;
         [Inject] private ListExpensesService _listExpensesService { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+        private int todayYear => DateTime.Now.Year;
+        private string todayMonth => DateTime.Now.ToString("MMM", CultureInfo.InvariantCulture);
         private readonly string dropdownCategoryDefaultMessage = "Select Category";
         private string userId = string.Empty;
-        private int sliderValue;
         private bool hasChanges = false;
-        private int sliderValuePercentage;
         public  bool isXSmallScreen { get; set; }
-        private string? selectedAddCategory = string.Empty;
-        private string? progressBarClass = "progressbar-blue";
+        private string selectedAddCategory = string.Empty;
+        private string progressBarClass = "progressbar-blue";
+        private string filteredDate => $"{filteredMonth} {filteredYear}";
+        private string filteredMonth = DateTime.Now.ToString("MMM", CultureInfo.InvariantCulture);
+        private int filteredYear = DateTime.Now.Year;
+        private bool previousDateEnabled => filteredYear <= (ExpenseYear - 3) && filteredMonth == todayMonth; // 3 years behind
+        private bool nextDateEnabled => filteredYear == ExpenseYear && filteredMonth == todayMonth; // Actual date
 
+        private int ExpenseYear => DateTime.Now.Year;
         private List<string> availableCategories = new();
         private ListExpenses listExpenses = new();
         private List<CategoryLimit> initialCategoryLimitList = new();
         private Dictionary<string, decimal> expensesByCategory = new();
-        private List<CategoryLimit> categoryLimitsList = new();
+        private List<CategoryLimit> allCategoryLimitsList = new();
+        private List<CategoryLimit> filteredCategoryLimits = new();
+        private readonly List<string> Months = Enum.GetNames(typeof(Months)).ToList();
 
         protected override async Task OnInitializedAsync()
         {
@@ -44,15 +55,18 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             if (string.IsNullOrWhiteSpace(token)) { Navigation.NavigateTo("/"); return; }
 
             var user = await authService.GetCurrentUserAsync(token);
-            userId = user.Id;
+            userId = user.Id!;
 
+            
             listExpenses = await _listExpensesService.GetListByUserIdAsync(userId);
             await InitializeCategoryLimits();
-            
-            GetAvailableCategories();
+            GetFilteredCategoryLimitByMonth();
+
+
+            GetAvailableCategoriesToAdd();
         }
 
-        private async Task AddCategoryLimit(string category)
+        private void AddCategoryLimit(string category)
         {
             if (category.Equals(dropdownCategoryDefaultMessage))
             {
@@ -69,30 +83,39 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                 return;
             }            
 
-            categoryLimitsList.Add(new CategoryLimit
+            allCategoryLimitsList.Add(new CategoryLimit
             {
                 Category = category,
-                Limit = 10 // Default limit, can be adjusted later
+                Limit = 100, // Default limit
+                Date = new DateDto {  Month = Enum.Parse<Months>(filteredMonth), Year = filteredYear }
             });
 
-            await GetExpensesAmountByCategory();
+            GetFilteredCategoryLimitByMonth();
 
             selectedAddCategory = dropdownCategoryDefaultMessage;
-            GetAvailableCategories();
+            GetAvailableCategoriesToAdd();
 
             CheckHasChanges();
         }
 
         private void RemoveCategoryLimitItem(CategoryLimit categoryLimit)
         {
-            categoryLimitsList.Remove(categoryLimit);
-            GetAvailableCategories();
+            allCategoryLimitsList.Remove(categoryLimit);
+            filteredCategoryLimits.Remove(categoryLimit);
+            GetAvailableCategoriesToAdd();
             CheckHasChanges();
         }
 
-        private void OnLimitValueChanged(CategoryLimit changedLimit, int value)
+        private void OnLimitValueChanged(CategoryLimit changedCategory, int value)
         {
-            changedLimit.Limit = value;
+            changedCategory.Limit = value;
+            
+            var index = allCategoryLimitsList.FindIndex(cat => cat.Category == changedCategory.Category);
+            if (index >= 0)
+            {
+                allCategoryLimitsList[index] = changedCategory;
+            }
+
             CheckHasChanges();
         }
 
@@ -103,7 +126,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                 UserCategoryLimit userCategoryLimit = new UserCategoryLimit
                 {
                     UserId = userId,
-                    CategoryLimits = categoryLimitsList
+                    CategoryLimits = allCategoryLimitsList
                 };
 
                 var response = await _categoryLimitService.UpdateUserCategoryLimitsAsync(userCategoryLimit);
@@ -122,7 +145,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                     });
 
                     // Refresh data to a new initialCategoryLimitList
-                    initialCategoryLimitList = categoryLimitsList
+                    initialCategoryLimitList = allCategoryLimitsList
                         .Select(catlimit => new CategoryLimit { Category = catlimit.Category, Limit = catlimit.Limit })
                         .ToList();
                     hasChanges = false;
@@ -165,18 +188,18 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         private async Task InitializeCategoryLimits()
         {
             var userCategoryLimit = await _categoryLimitService.GetUserCategoryLimitsAsync(userId);
-            categoryLimitsList = userCategoryLimit.CategoryLimits ?? new List<CategoryLimit>();
+            allCategoryLimitsList = userCategoryLimit.CategoryLimits ?? new List<CategoryLimit>();
 
-            initialCategoryLimitList = categoryLimitsList
+            initialCategoryLimitList = allCategoryLimitsList
                 .Select(catlimit => new CategoryLimit { Category = catlimit.Category, Limit = catlimit.Limit })
                 .ToList();
 
-            await GetExpensesAmountByCategory();
+            GetExpensesAmountByCategory();
         }
 
-        private async Task GetExpensesAmountByCategory()
+        private void GetExpensesAmountByCategory()
         {    
-            foreach (var category in categoryLimitsList)
+            foreach (var category in filteredCategoryLimits)
             {
                 expensesByCategory[category.Category] = listExpenses.Expenses
                     .Where(expense => expense.Category == category.Category)
@@ -184,32 +207,85 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             }
         }
 
-        private void GetAvailableCategories()
+        private void GetFilteredCategoryLimitByMonth()
+        {
+            filteredCategoryLimits = allCategoryLimitsList
+                .Where(catlimit => catlimit.Date.Month == Enum.Parse<Months>(filteredMonth) && catlimit.Date.Year == filteredYear)
+                .ToList();
+
+            //var filteredMonthExpenses = listExpenses.Expenses
+            //    .Where(exp => exp.CreationDate.Month == Months.IndexOf(filteredMonth) + 1 && exp.CreationDate.Year == filteredYear);
+
+            //var categories = filteredMonthExpenses
+            //    .Select(cat => cat.Category)
+            //    .Distinct()
+            //    .ToList();
+
+            //filteredCategoryLimits = new();
+
+            //foreach (var category in categories)
+            //{
+            //    filteredCategoryLimits.Add(new CategoryLimit
+            //    {
+            //        Category = category,
+            //        Limit = allCategoryLimitsList.FirstOrDefault(cl => cl.Category == category).Limit
+            //    });
+            //}
+
+            GetExpensesAmountByCategory();
+        }
+
+        private void GetAvailableCategoriesToAdd()
         {
             availableCategories = Enum.GetNames(typeof(ExpenseCategory)).ToList();
 
-            foreach (var category in categoryLimitsList)
+            foreach (var category in allCategoryLimitsList)
             {
                 availableCategories.Remove(category.Category);
             }
         }
 
-        private int GetLimitPercentage(int limit)
+        private void PreviousMonth()
         {
-            return (limit * 100) / 1000;
+            if (Months.IndexOf(filteredMonth) == 0)
+            {
+                filteredMonth = Months.Last();
+                filteredYear -= 1;
+            }
+            else
+            {
+                filteredMonth = Months[Months.IndexOf(filteredMonth) - 1];
+            }
+
+            GetFilteredCategoryLimitByMonth();
+
+            //filteredMonth = (DateTime.Now.Month - 1).ToString("MMM");
+            //filteredYear = (DateTime.Now.Year - 1).ToString();
+        }
+        
+        private void NextMonth()
+        {
+            if (Months.IndexOf(filteredMonth) == Months.Count - 1)
+            {
+                filteredMonth = Months.First();
+                filteredYear += 1;
+            }
+            else
+            {
+                filteredMonth = Months[Months.IndexOf(filteredMonth) + 1];
+            }
+
+            GetFilteredCategoryLimitByMonth();
         }
 
-        private bool CheckHasChanges()
-        {
-            return hasChanges = !initialCategoryLimitList.SequenceEqual(categoryLimitsList, new CategoryLimitComparer());
-        }
-
-        private void OnSelectedCategory(DropDownButtonItemClickEventArgs args)
-        {
-            selectedAddCategory = args.ItemInfo.Text;
-        }
-
-        private bool IsCategoryLimitListEmpty => categoryLimitsList.Count == 0;
+        private int GetLimitPercentage(int limit) => (limit * 100) / 1200;
+        private int GetCategoryExpensePercentage(decimal expense, int limit) => Convert.ToInt16((expense * 100) / 1200);
+        
+        private bool CheckHasChanges() => hasChanges = !initialCategoryLimitList.SequenceEqual(allCategoryLimitsList, new CategoryLimitComparer());
+        
+        private void OnSelectedCategory(DropDownButtonItemClickEventArgs args) => selectedAddCategory = args.ItemInfo.Text;
+        
+        private bool IsCategoryLimitListEmpty => allCategoryLimitsList.Count == 0;
 
     }
 }

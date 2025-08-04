@@ -57,9 +57,9 @@
                 <Template>
                     <RadzenStack Orientation="Radzen.Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="1rem" Wrap="FlexWrap.Wrap">
                         <RadzenColumn Size="10" SizeMD="9" class="d-flex align-items-center gap-3">
-                                <RadzenButton Icon="chevron_left"  />
-                                <RadzenLabel Text="July 2025" Style="font-weight: bold;" />
-                                <RadzenButton Icon="chevron_right"  />                    
+                            <RadzenButton Click="(() => PreviousMonth())" Disabled="@previousDateEnabled" Icon="chevron_left" />
+                                <RadzenLabel Text="@filteredDate" Style="font-weight: bold;" />
+                            <RadzenButton Click="(() => NextMonth())" Disabled="@nextDateEnabled" Icon="chevron_right" />
                         </RadzenColumn>
                     </RadzenStack>
                 </Template>
@@ -70,7 +70,7 @@
                 <DxStackLayoutItem>
 
                     <Template>
-                    @foreach (var category in categoryLimitsList)
+                    @foreach (var category in filteredCategoryLimits)
                     {
                     <div class="category-limit-item">
                         <RadzenIcon Style="margin-top:45px" Icon="@IconHelper.GetIconForCategory(category.Category)" />                            
@@ -101,7 +101,7 @@
 
                                 <div style="position: relative; top: 15px; font-size: 13px;">
                                     <span style="position: absolute; left: 0; color: gray">
-                                        @expensesByCategory[category.Category] € (X%)
+                                            @expensesByCategory[category.Category] € (@GetCategoryExpensePercentage(expensesByCategory[category.Category], category.Limit)%)
                                     </span>
                                     <span style="position: absolute; right: 0; color: mediumseagreen; font-weight: bold">
                                             Limit: @category.Limit € (@GetLimitPercentage(category.Limit)%)

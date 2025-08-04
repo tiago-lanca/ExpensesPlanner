@@ -23,8 +23,8 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Inject] private AuthService AuthService { get; set; } = default!;
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         [Inject] private DialogService dialogService { get; set; } = default!;
-        private List<Expense> AllExpenses { get; set; } = default!;
-        private List<Expense> FilteredExpenses { get; set; } = default!;
+
+        
         private decimal TotalAmount = 0;
         private string chartKey = Guid.NewGuid().ToString();
         private bool showDataLabels = true;
@@ -32,10 +32,12 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         private bool previousYearEnabled => ExpenseYear <= DateTime.Now.Year - 5;
         private bool nextYearEnabled => ExpenseYear >= DateTime.Now.Year;
         private int ExpenseYear = DateTime.Now.Year;
+
         private IList<Expense> selectedExpense = new List<Expense>();
+        private List<Expense> AllExpenses { get; set; } = default!;
+        private List<Expense> FilteredExpenses { get; set; } = default!;
         private readonly List<string> Categories = Enum.GetNames(typeof(ExpenseCategory)).ToList();
         private readonly List<string> Months = Enum.GetNames(typeof(Months)).ToList();
-        private List<MonthlyExpense> MonthlyExpenses { get; set; } = new List<MonthlyExpense>();
 
         private Dictionary<string, List<MonthlyExpense>> dataByCategory = new();
         private string? filteredCategory
@@ -143,23 +145,23 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             GetExpensesWithFilters();
         }
 
-        private void GroupByMonthExpenses()
+        /*private void GroupByMonthExpenses()
         {
-            //MonthlyExpenses = FilteredExpenses
-            //    // Filtering expenses by the selected year
-            //    .Where(exp => exp.CreationDate.Year == ExpenseYear)
-            //    // Grouping by year and month of the CreationDate
-            //    .GroupBy(exp => new { exp.CreationDate.Year, exp.CreationDate.Month })
-            //    // Selecting each group to create a MonthlyExpense object with a specific month and total amount of that month
-            //    .Select(g => new MonthlyExpense
-            //    {
-            //        Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM yyyy", CultureInfo.InvariantCulture),
-            //        TotalAmount = g.Sum(exp => exp.Amount)
-            //    })
-            //    // Ordering the MonthlyExpense by their date
-            //    .OrderBy(x => DateTime.ParseExact(x.Month, "MMM yyyy", CultureInfo.InvariantCulture))
-            //    .ToList();
-        }
+            MonthlyExpenses = FilteredExpenses
+                // Filtering expenses by the selected year
+                .Where(exp => exp.CreationDate.Year == ExpenseYear)
+                // Grouping by year and month of the CreationDate
+                .GroupBy(exp => new { exp.CreationDate.Year, exp.CreationDate.Month })
+                // Selecting each group to create a MonthlyExpense object with a specific month and total amount of that month
+                .Select(g => new MonthlyExpense
+                {
+                    Month = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("MMM yyyy", CultureInfo.InvariantCulture),
+                    TotalAmount = g.Sum(exp => exp.Amount)
+                })
+                // Ordering the MonthlyExpense by their date
+                .OrderBy(x => DateTime.ParseExact(x.Month, "MMM yyyy", CultureInfo.InvariantCulture))
+                .ToList();
+        }*/
 
         private void GroupExpensesByCategory()
         {
