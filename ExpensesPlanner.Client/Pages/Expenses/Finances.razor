@@ -1,6 +1,7 @@
 ﻿
 @attribute [Route(PagesRoutes.MyFinances)]
 @rendermode InteractiveAuto
+@using ExpensesPlanner.Client.DTO;
 
     <h3 >My Finances</h3>
 
@@ -133,7 +134,31 @@
         <Items>
             <DxStackLayoutItem>
                 <Template>
-                    <DxButton RenderStyle="ButtonRenderStyle.Primary" RenderStyleMode="ButtonRenderStyleMode.Contained" Text="Graphics" />
+                    <div style="width: 100%; max-width: 500px; height: 500px;">
+                        <DxChart T="SalaryExpensesChart" Data="@chartData" Width="500px">
+
+                            <DxChartBarSeries T="SalaryExpensesChart" TArgument="string" TValue="int" Name="Salary" 
+                                ArgumentField="item => item.ChartDataItem" ValueField="item => item.Salary" />
+
+                            @foreach (var category in monthCategories)
+                            {
+                                <DxChartStackedBarSeries T="SalaryExpensesChart" TArgument="string" TValue="decimal" Name="@Enum.GetName(typeof(ExpenseCategory), category)"
+                                    ArgumentField="item => item.ChartDataItem" ValueField="item => item.TotalAmount"
+                                    Filter="@((SalaryExpensesChart item) => item.ExpenseCategory == category)" />
+                            }
+                            <DxChartLegend Position="RelativePosition.Outside"
+                                           HorizontalAlignment="HorizontalAlignment.Center"
+                                           VerticalAlignment="VerticalEdge.Bottom" />
+
+                            <DxChartTooltip Enabled="true" Position="RelativePosition.Inside">
+                                <div style="margin: 0.75rem">
+                                    <div class="fw-bold">@context.Point.Argument</div>
+                                    <div>Description: @context.Point.SeriesName</div>
+                                    <div>Amount: @($"{context.Point.Value:N0}")€</div>
+                                </div>
+                            </DxChartTooltip>
+                        </DxChart>
+                    </div>
                 </Template>
             </DxStackLayoutItem>
         </Items>

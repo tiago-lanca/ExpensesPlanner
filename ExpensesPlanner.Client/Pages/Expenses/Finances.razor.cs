@@ -44,6 +44,8 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         private List<CategoryLimit> allCategoryLimitsList = new();
         private List<CategoryLimit> filteredCategoryLimits = new();
         private readonly List<string> Months = Enum.GetNames(typeof(Months)).ToList();
+        private List<SalaryExpensesChart> chartData = new();
+        private List<ExpenseCategory> monthCategories => GetExpensesCategoriesMonthFilter();
 
         protected override async Task OnInitializedAsync()
         {
@@ -64,6 +66,10 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
 
             GetAvailableCategoriesToAdd();
+            RefreshChartData();
+            //List<ExpenseCategory> monthCategories = filteredCategoryLimits.Select(cat => Enum.Parse<ExpenseCategory>(cat.Category)).ToList();
+
+
         }
 
         private void AddCategoryLimit(string category)
@@ -202,7 +208,9 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             foreach (var category in filteredCategoryLimits)
             {
                 expensesByCategory[category.Category] = listExpenses.Expenses
-                    .Where(expense => expense.Category == category.Category)
+                    .Where(expense => expense.CreationDate.Month == (int)Enum.Parse<Months>(filteredMonth)
+                            && expense.CreationDate.Year == filteredYear 
+                            && expense.Category == category.Category)
                     .Sum(expense => expense.Amount);
             }
         }
@@ -213,33 +221,37 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                 .Where(catlimit => catlimit.Date.Month == Enum.Parse<Months>(filteredMonth) && catlimit.Date.Year == filteredYear)
                 .ToList();
 
-            //var filteredMonthExpenses = listExpenses.Expenses
-            //    .Where(exp => exp.CreationDate.Month == Months.IndexOf(filteredMonth) + 1 && exp.CreationDate.Year == filteredYear);
-
-            //var categories = filteredMonthExpenses
-            //    .Select(cat => cat.Category)
-            //    .Distinct()
-            //    .ToList();
-
-            //filteredCategoryLimits = new();
-
-            //foreach (var category in categories)
-            //{
-            //    filteredCategoryLimits.Add(new CategoryLimit
-            //    {
-            //        Category = category,
-            //        Limit = allCategoryLimitsList.FirstOrDefault(cl => cl.Category == category).Limit
-            //    });
-            //}
-
             GetExpensesAmountByCategory();
+            GetAvailableCategoriesToAdd();
+        }
+
+        private void RefreshChartData()
+        {
+            var filteredExpensesMonthYear = listExpenses.Expenses
+                .Where(exp => exp.CreationDate.ToString("MMM", CultureInfo.InvariantCulture) == filteredMonth && exp.CreationDate.Year == filteredYear);
+
+            var groupedExpensesCategory = filteredExpensesMonthYear
+                .GroupBy(expense => expense.Category)
+                .Select(group => new SalaryExpensesChart
+                {
+                    ChartDataItem = "Expenses",
+                    ExpenseCategory = Enum.Parse<ExpenseCategory>(group.Key),
+                    TotalAmount = group.Sum(exp => exp.Amount)
+                });
+
+            chartData = new List<SalaryExpensesChart>
+            {
+                new SalaryExpensesChart { ChartDataItem = "Salary", Salary = 1200 }                
+            };
+
+            chartData.AddRange(groupedExpensesCategory);
         }
 
         private void GetAvailableCategoriesToAdd()
         {
             availableCategories = Enum.GetNames(typeof(ExpenseCategory)).ToList();
 
-            foreach (var category in allCategoryLimitsList)
+            foreach (var category in filteredCategoryLimits)
             {
                 availableCategories.Remove(category.Category);
             }
@@ -258,6 +270,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             }
 
             GetFilteredCategoryLimitByMonth();
+            RefreshChartData();
 
             //filteredMonth = (DateTime.Now.Month - 1).ToString("MMM");
             //filteredYear = (DateTime.Now.Year - 1).ToString();
@@ -276,7 +289,16 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             }
 
             GetFilteredCategoryLimitByMonth();
+            RefreshChartData();
         }
+
+        private List<ExpenseCategory> GetExpensesCategoriesMonthFilter() =>
+            listExpenses.Expenses
+            .Where(expense => expense.CreationDate.Month == (int)Enum.Parse<Months>(filteredMonth)
+                    && expense.CreationDate.Year == filteredYear)
+            .Select(expense => Enum.Parse<ExpenseCategory>(expense.Category))
+            .Distinct()
+            .ToList();
 
         private int GetLimitPercentage(int limit) => (limit * 100) / 1200;
         private int GetCategoryExpensePercentage(decimal expense, int limit) => Convert.ToInt16((expense * 100) / 1200);

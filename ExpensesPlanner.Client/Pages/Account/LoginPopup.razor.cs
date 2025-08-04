@@ -39,6 +39,8 @@ namespace ExpensesPlanner.Client.Pages.Account
                     var user = await response.Content.ReadFromJsonAsync<TokenResponse>();
 
                     await LocalStorage.SetItemAsync("authToken", user.Token);
+                    HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
+
                     Console.WriteLine($"User token: {user.Token}");
                     await ((JwtAuthenticationStateProvider)AuthStateProvider).MarkUserAsAuthenticatedAsync(user.Token);
 

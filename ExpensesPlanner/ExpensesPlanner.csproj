@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\ExpensesPlanner.Client\Pages\Expenses\Component.razor" Link="Component.razor" />
     <None Include="..\ExpensesPlanner.Client\Pages\_Imports.razor" Link="_Imports.razor" />
   </ItemGroup>
 
