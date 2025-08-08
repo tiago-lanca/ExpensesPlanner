@@ -2,14 +2,17 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 main {
     flex: 1;
+    min-height: 100vh;
 }
 
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    min-height: 100vh;
 }
 
 .top-row {

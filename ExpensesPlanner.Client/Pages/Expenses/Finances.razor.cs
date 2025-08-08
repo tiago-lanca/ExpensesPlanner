@@ -1,5 +1,6 @@
 ﻿using Blazored.LocalStorage;
 using DevExpress.Blazor;
+using DevExpress.Blazor.Internal;
 using ExpensesPlanner.Client.DTO;
 using ExpensesPlanner.Client.Enums;
 using ExpensesPlanner.Client.Models;
@@ -7,8 +8,10 @@ using ExpensesPlanner.Client.Pages.Account;
 using ExpensesPlanner.Client.Services;
 using ExpensesPlanner.Client.Utilities;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Radzen;
 using System.Globalization;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ExpensesPlanner.Client.Pages.Expenses
@@ -21,6 +24,8 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Inject] private AuthService authService { get; set; } = default!;
         [Inject] private ListExpensesService _listExpensesService { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
+        [Inject] private Radzen.DialogService dialogService { get; set; } = default!;
+        [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
         private int todayYear => DateTime.Now.Year;
         private string todayMonth => DateTime.Now.ToString("MMM", CultureInfo.InvariantCulture);
@@ -257,6 +262,28 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             }
         }
 
+        private async Task SalaryBarClick(ChartSeriesClickEventArgs info)
+        {
+            if (info.Series.Name == "Salary")
+            {
+                await LoadStateAsync();
+
+                await dialogService.OpenAsync<SalaryPresetPopup>("Set a Salary",
+                       new Dictionary<string, object>() { { "UserId", userId } },
+                       new DialogOptions()
+                       {
+                           CssClass = "userdetails-dialog",
+                           CloseDialogOnOverlayClick = false,
+                           //Width = Settings != null ? Settings.Width : "712px",
+                           //Height = Settings != null ? Settings.Height : "712px",
+                           //Left = Settings != null ? Settings.Left : null,
+                           //Top = Settings != null ? Settings.Top : null
+                       });
+
+                await SaveStateAsync();
+            }
+        }
+
         private void PreviousMonth()
         {
             if (Months.IndexOf(filteredMonth) == 0)
@@ -307,7 +334,49 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         
         private void OnSelectedCategory(DropDownButtonItemClickEventArgs args) => selectedAddCategory = args.ItemInfo.Text;
         
-        private bool IsCategoryLimitListEmpty => allCategoryLimitsList.Count == 0;
+        private bool IsCategoryLimitListEmpty => filteredCategoryLimits.Count == 0;
 
+        DialogSettings _settings;
+        public DialogSettings Settings
+        {
+            get
+            {
+                return _settings;
+            }
+            set
+            {
+                if (_settings != value)
+                {
+                    _settings = value;
+                    InvokeAsync(SaveStateAsync);
+                }
+            }
+        }
+
+        private async Task LoadStateAsync()
+        {
+            await Task.CompletedTask;
+
+            var result = await JSRuntime.InvokeAsync<string>("window.localStorage.getItem", "DialogSettings");
+            if (!string.IsNullOrEmpty(result))
+            {
+                _settings = JsonSerializer.Deserialize<DialogSettings>(result);
+            }
+        }
+
+        private async Task SaveStateAsync()
+        {
+            await Task.CompletedTask;
+
+            await JSRuntime.InvokeVoidAsync("window.localStorage.setItem", "DialogSettings", JsonSerializer.Serialize<DialogSettings>(Settings));
+        }
+
+        public class DialogSettings
+        {
+            public string Left { get; set; }
+            public string Top { get; set; }
+            public string Width { get; set; }
+            public string Height { get; set; }
+        }
     }
 }

@@ -5,6 +5,7 @@ using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.JSInterop;
 using MongoDB.Driver;
 using Radzen;
@@ -73,6 +74,7 @@ namespace ExpensesPlanner.Components.Layout
                     });
 
             await SaveStateAsync();
+            StateHasChanged();
         }
 
         public async Task Logout()

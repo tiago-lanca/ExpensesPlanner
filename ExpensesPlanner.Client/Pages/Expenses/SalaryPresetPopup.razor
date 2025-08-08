@@ -1,0 +1,16 @@
+
+
+
+    <DxFormLayout CssClass="w-100">
+    <DxFormLayoutItem Caption="Salary:" CssClass="dxbold-label" ColSpanMd="12">
+            <DxSpinEdit @bind-Value="user.Salary" Mask="@NumericMask.Currency">
+                <DxNumericMaskProperties Culture="CultureInfo" />
+            </DxSpinEdit>
+        </DxFormLayoutItem>
+
+        <DxFormLayoutItem Caption=" " ColSpanMd="12">
+            <DxButton ButtonType="ButtonType.Submit" Text="Save" />
+            <DxButton RenderStyle="ButtonRenderStyle.Danger" CssClass="w-40" Text="Cancel" Click="CloseSalarySetDialog" />
+        </DxFormLayoutItem>
+    
+    </DxFormLayout>

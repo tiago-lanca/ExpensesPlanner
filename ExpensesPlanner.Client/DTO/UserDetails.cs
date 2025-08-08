@@ -34,7 +34,9 @@ namespace ExpensesPlanner.Client.DTO
 
         public string ListExpensesId { get; set; } = string.Empty;
 
-
         public bool IsListExpensesEmpty() => ListExpensesId == string.Empty;
+        public int? Salary { get; set; }
+        public bool Salary_Preset { get; set; } = false;
+
     }
 }

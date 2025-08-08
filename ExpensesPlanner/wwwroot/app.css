@@ -1,5 +1,6 @@
 html, body {
     font-family: 'Roboto', Helvetica, Arial, sans-serif !important;
+    height: 1100px;
 }
 
 a, .btn-link {
@@ -58,6 +59,10 @@ h1:focus {
         align-items: center;
         margin-bottom: 40px;
     }
+}
+
+.dxbold-label .dxbl-fl-cpt{
+    font-weight: bold !important;
 }
 
 .dropdown-icons {

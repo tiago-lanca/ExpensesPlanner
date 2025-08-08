@@ -13,6 +13,7 @@
        
     
 <RadzenStack Wrap="FlexWrap.Wrap" style="margin-top:50px;" Orientation="Radzen.Orientation.Horizontal" Gap="100px">
+    <!-- Stack Category Limits -->
     <DxStackLayout Orientation="DevExpress.Blazor.Orientation.Vertical" ItemSpacing="5px">
         <Items>
 
@@ -129,14 +130,16 @@
             
         </Items>
     </DxStackLayout>
+    <!-- -->
 
+    <!-- Stack Salary/Expenses Graphic -->
     <DxStackLayout Orientation="DevExpress.Blazor.Orientation.Vertical" ItemSpacing="10px">
         <Items>
             <DxStackLayoutItem>
                 <Template>
-                    <div style="width: 100%; max-width: 500px; height: 500px;">
-                        <DxChart T="SalaryExpensesChart" Data="@chartData" Width="500px">
-
+                    <div style="width: 100%; max-width: 500px; height: 500px; margin-top:150px;">
+                        <DxChart T="SalaryExpensesChart" Data="@chartData" Width="500px" SeriesClick="SalaryBarClick">
+                            <DxChartTitle Text="Salary vs Expenses" />
                             <DxChartBarSeries T="SalaryExpensesChart" TArgument="string" TValue="int" Name="Salary" 
                                 ArgumentField="item => item.ChartDataItem" ValueField="item => item.Salary" />
 

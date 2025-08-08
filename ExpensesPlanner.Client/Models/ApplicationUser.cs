@@ -44,5 +44,7 @@ namespace ExpensesPlanner.Client.Models
 
         [BsonElement("listExpensesId"), BsonRepresentation(BsonType.String)]
         public string ListExpensesId { get; set; } = string.Empty;
+        public int? Salary { get; set; }
+        public bool Salary_Preset { get; set; } = false;
     }
 }
