@@ -24,7 +24,7 @@ else if (users.Count == 0)
 }
 else
 {
-    <RadzenDataGrid AllowFiltering="false" AllowColumnResize="false" AllowAlternatingRows="false" header FilterMode="FilterMode.Advanced" AllowSorting="false" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+    <RadzenDataGrid AllowFiltering="false" AllowColumnResize="false" AllowAlternatingRows="false" header FilterMode="FilterMode.Advanced" AllowSorting="false" PageSize="5" AllowPaging="true" PagerHorizontalAlign="Radzen.HorizontalAlign.Left" ShowPagingSummary="true"
                     Data="@users" TItem="UserDetails" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedUsers>
         <Columns>
 

@@ -1,5 +1,6 @@
 ﻿using ExpensesPlanner.Client.DTO;
 using ExpensesPlanner.Client.Interfaces;
+using ExpensesPlanner.Client.Models;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -12,8 +13,8 @@ namespace ExpensesPlanner.Client.Pages.Account
     public partial class EditUser
     {
         [Inject] private IUserService _userService { get; set; } = default!;
-        private UserDetails editUserModel = new();
-        private RadzenTemplateForm<UserDetails> form { get; set; } = default!;
+        private ApplicationUser editUserModel = new();
+        private RadzenTemplateForm<ApplicationUser> form { get; set; } = default!;
         [Inject] private NavigationManager navigation { get; set; } = default!;
         [Parameter] public string Id { get; set; } = string.Empty;
         private string imagePreview;
@@ -22,7 +23,7 @@ namespace ExpensesPlanner.Client.Pages.Account
         {
             var user = await LoadUserAsync(Id);
 
-            editUserModel = new UserDetails
+            editUserModel = new ApplicationUser
             {
                 Id = user.Id,
                 FirstName = user.FirstName,
@@ -56,7 +57,7 @@ namespace ExpensesPlanner.Client.Pages.Account
                 busy = false;
             }
         }
-        private async Task<UserDetails> LoadUserAsync(string id)
+        private async Task<ApplicationUser> LoadUserAsync(string id)
         {
             return await _userService.GetUserByIdAsync(id);
         }

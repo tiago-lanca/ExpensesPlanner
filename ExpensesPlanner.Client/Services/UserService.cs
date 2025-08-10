@@ -1,5 +1,6 @@
 ﻿using ExpensesPlanner.Client.DTO;
 using ExpensesPlanner.Client.Interfaces;
+using ExpensesPlanner.Client.Models;
 using System.Net.Http.Json;
 
 namespace ExpensesPlanner.Client.Services
@@ -18,9 +19,14 @@ namespace ExpensesPlanner.Client.Services
             return await _httpClient.GetFromJsonAsync<List<UserDetails>>("api/account/users") ?? new List<UserDetails>();
         }
 
-        public async Task<UserDetails> GetUserByIdAsync(string userId)
+        public async Task<ApplicationUser> GetUserByIdAsync(string userId)
         {
-            return await _httpClient.GetFromJsonAsync<UserDetails>($"api/account/user/{userId}");
+            return await _httpClient.GetFromJsonAsync<ApplicationUser>($"api/account/user/{userId}");
+        }
+
+        public async Task<ApplicationUser> GetApplicationUserByIdAsync(string userId)
+        {
+            return await _httpClient.GetFromJsonAsync<ApplicationUser>($"api/account/user/{userId}");
         }
 
         public async Task<HttpResponseMessage> CreateUserAsync(RegisterUser user)
@@ -28,7 +34,7 @@ namespace ExpensesPlanner.Client.Services
             return await _httpClient.PostAsJsonAsync("api/account/register", user);
         }
 
-        public async Task<HttpResponseMessage> UpdateUserAsync(UserDetails user)
+        public async Task<HttpResponseMessage> UpdateUserAsync(ApplicationUser user)
         {
             return await _httpClient.PutAsJsonAsync($"api/account/user/{user.Id}", user);
         }

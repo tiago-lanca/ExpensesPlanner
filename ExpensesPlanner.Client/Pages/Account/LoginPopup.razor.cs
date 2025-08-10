@@ -31,7 +31,6 @@ namespace ExpensesPlanner.Client.Pages.Account
                     Password = args.Password
                 };
                 
-
                 var response = await AuthService.LoginAsync(loginDto);
 
                 if (response.IsSuccessStatusCode)
@@ -39,14 +38,14 @@ namespace ExpensesPlanner.Client.Pages.Account
                     var user = await response.Content.ReadFromJsonAsync<TokenResponse>();
 
                     await LocalStorage.SetItemAsync("authToken", user.Token);
+
                     HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
 
-                    Console.WriteLine($"User token: {user.Token}");
                     await ((JwtAuthenticationStateProvider)AuthStateProvider).MarkUserAsAuthenticatedAsync(user.Token);
-
-
+                    
                     Navigation.NavigateTo(PagesRoutes.AllExpenses);
 
+                    //Console.WriteLine($"User token: {user.Token}");
                     var currentUser = await AuthService.GetCurrentUserAsync(user.Token);
                 }
                 else
@@ -79,8 +78,7 @@ namespace ExpensesPlanner.Client.Pages.Account
                 Console.WriteLine(ex.InnerException.Message);
             }
         }
-
-        private async Task GoBackLogin()
+        private void GoBackLogin()
         {
             Navigation.NavigateTo("/");
         }

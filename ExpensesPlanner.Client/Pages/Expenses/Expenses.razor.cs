@@ -1,4 +1,5 @@
 ﻿using Blazored.LocalStorage;
+using ExpensesPlanner.Client.DTO;
 using ExpensesPlanner.Client.Enums;
 using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Models;
@@ -39,7 +40,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         private readonly List<string> Categories = Enum.GetNames(typeof(ExpenseCategory)).ToList();
         private readonly List<string> Months = Enum.GetNames(typeof(Months)).ToList();
 
-        private Dictionary<string, List<MonthlyExpense>> dataByCategory = new();
+        private Dictionary<string, List<MonthlyAmount>> dataByCategory = new();
         private string? filteredCategory
         {
             get => _filteredCategory;
@@ -178,11 +179,11 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                 .Distinct()
                 .ToList();
 
-            dataByCategory = new Dictionary<string, List<MonthlyExpense>>();
+            dataByCategory = new Dictionary<string, List<MonthlyAmount>>();
 
             foreach (var category in allCategories)
             {
-                var list = new List<MonthlyExpense>();
+                var list = new List<MonthlyAmount>();
 
                 foreach (var month in allMonths)
                 {
@@ -191,7 +192,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                         .Sum(e => e.Amount);
 
 
-                    list.Add(new MonthlyExpense { Month = month.ToString("MMM yyyy", CultureInfo.InvariantCulture), TotalAmount = total });
+                    list.Add(new MonthlyAmount { Month = month.ToString("MMM yyyy", CultureInfo.InvariantCulture), TotalAmount = total });
 
                 }
                 

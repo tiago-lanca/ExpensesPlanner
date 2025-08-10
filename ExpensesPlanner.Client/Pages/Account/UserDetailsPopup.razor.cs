@@ -17,7 +17,7 @@ namespace ExpensesPlanner.Client.Pages.Account
         private List<Expense> expenses = new List<Expense>();
         private string imagePreview { get; set; } = string.Empty;
 
-        private UserDetails user = new();
+        private ApplicationUser user = new();
 
         protected override async Task OnParametersSetAsync()
         {

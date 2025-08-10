@@ -1,22 +1,33 @@
-﻿using ExpensesPlanner.Client.DTO;
+﻿using Blazored.LocalStorage;
+using ExpensesPlanner.Client.DTO;
 using ExpensesPlanner.Client.Interfaces;
+using ExpensesPlanner.Client.Models;
+using ExpensesPlanner.Client.RootPages;
 using ExpensesPlanner.Client.Services;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using Radzen;
 using Radzen.Blazor;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
 namespace ExpensesPlanner.Client.Pages.Account
 {
     public partial class Register
-    {       
-        [Inject] NavigationManager Navigation { get; set; } = default!;
+    {     
+        [Inject] private IUserService userService { get; set; } = default!;  
+        [Inject] private NavigationManager Navigation { get; set; } = default!;
+        [Inject] private ILocalStorageService LocalStorage { get; set; } = default!;
+        [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
+        [Inject] private AuthService AuthService { get; set; } = default!;
+        [Inject] private HttpClient HttpClient { get; set; } = default!;
+        [Inject] private NotificationService NotificationService { get; set; } = default!;
 
         private readonly RegisterUser registerModel = new();
         private RadzenTemplateForm<RegisterUser> form;
-        [Inject] private IUserService userService { get; set; } = default!;
+        
         private string imagePreview;
         private string message;
         private bool busy;
@@ -27,11 +38,44 @@ namespace ExpensesPlanner.Client.Pages.Account
                 busy = true;
                 var response = await userService.CreateUserAsync(registerModel);
 
-                if (response.IsSuccessStatusCode) 
+                if (response.IsSuccessStatusCode)
                 {
                     await Task.Delay(2000);
                     busy = false;
-                    Navigation.NavigateTo("/account/users");
+
+                    var loginDto = new LoginDto
+                    {
+                        Email = registerModel.Email,
+                        Password = registerModel.Password
+                    };
+
+
+                    response = await AuthService.LoginAsync(loginDto);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var user = await response.Content.ReadFromJsonAsync<TokenResponse>();
+
+                        await LocalStorage.SetItemAsync("authToken", user.Token);
+                        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
+
+                        await ((JwtAuthenticationStateProvider)AuthStateProvider).MarkUserAsAuthenticatedAsync(user.Token);
+
+                        Navigation.NavigateTo(PagesRoutes.AllExpenses);
+                    }
+                    else
+                    {
+                        NotificationService.Notify(new NotificationMessage
+                        {
+                            Severity = NotificationSeverity.Error,
+                            Summary = "Error",
+                            Detail = "Attempt to login without success.",
+                            Duration = 4000,
+                            ShowProgress = true,
+                            CloseOnClick = true,
+                            Payload = DateTime.Now
+                        });
+                    }
                 }
                 else
                 {

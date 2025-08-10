@@ -35,7 +35,7 @@ namespace ExpensesPlanner.Client.Models
 
         [BsonElement("dateBirth"), BsonRepresentation(BsonType.DateTime)]
         public DateTime? DateOfBirth { get; set; }
-        
+
         [BsonElement("profilePictureUrl")]
         public byte[]? ProfilePictureUrl { get; set; }
 
@@ -44,7 +44,13 @@ namespace ExpensesPlanner.Client.Models
 
         [BsonElement("listExpensesId"), BsonRepresentation(BsonType.String)]
         public string ListExpensesId { get; set; } = string.Empty;
-        public int? Salary { get; set; }
-        public bool Salary_Preset { get; set; } = false;
+        public int? Salary_Preset { get; set; }
+        public bool Salary_Preset_Enabled { get; set; } = false;
+        public List<MonthlyExpenseChart> MonthlyExpenseChart { get; set; } = new List<MonthlyExpenseChart>();
+
+        public bool IsListExpensesEmpty()
+        {
+            return string.IsNullOrEmpty(ListExpensesId) || ListExpensesId == Guid.Empty.ToString();
+        }
     }
 }

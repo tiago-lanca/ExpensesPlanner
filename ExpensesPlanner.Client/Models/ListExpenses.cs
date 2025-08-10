@@ -21,7 +21,7 @@ namespace ExpensesPlanner.Client.Models
 
         #region Functions
 
-        public static async Task<ListExpenses> CreateListExpenses(UserDetails user, ListExpensesService listExpensesService)
+        public static async Task<ListExpenses> CreateListExpenses(ApplicationUser user, ListExpensesService listExpensesService)
         {
             var newList = new ListExpenses
             {

@@ -43,7 +43,7 @@ else
     </RadzenRow>
     <br />
 
-    <RadzenDataGrid AllowFiltering="false" AllowColumnResize="false" AllowAlternatingRows="false" header FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+    <RadzenDataGrid AllowFiltering="false" AllowColumnResize="false" AllowAlternatingRows="false" header FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="Radzen.HorizontalAlign.Left" ShowPagingSummary="true"
                     Data="@FilteredExpenses" TItem="Expense" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedExpense>
         <Columns>            
             <RadzenDataGridColumn Title="Description" Frozen="true" Width="150px" HeaderCssClass="font-bold">

@@ -141,8 +141,15 @@
                         <DxChart T="SalaryExpensesChart" Data="@chartData" Width="500px" SeriesClick="SalaryBarClick">
                             <DxChartTitle Text="Salary vs Expenses" />
                             <DxChartBarSeries T="SalaryExpensesChart" TArgument="string" TValue="int" Name="Salary" 
-                                ArgumentField="item => item.ChartDataItem" ValueField="item => item.Salary" />
+                                ArgumentField="item => item.ChartDataItem" ValueField="item => item.Salary ?? 0" />
+                                @* @<DxPopup @bind-Visible="@PopupVisible" ShowFooter="false" HeaderText="Preset Salary">
+                                    <BodyContentTemplate>
+                                        <SalaryPresetPopup UserId="@userId"/>
+                                    </BodyContentTemplate>
+                                    * <FooterContentTemplate>
 
+                                    </FooterContentTemplate> 
+                                </DxPopup>*@
                             @foreach (var category in monthCategories)
                             {
                                 <DxChartStackedBarSeries T="SalaryExpensesChart" TArgument="string" TValue="decimal" Name="@Enum.GetName(typeof(ExpenseCategory), category)"
@@ -166,4 +173,5 @@
             </DxStackLayoutItem>
         </Items>
     </DxStackLayout>
+    <!-- -->
 </RadzenStack>

@@ -30,31 +30,15 @@ namespace ExpensesPlanner.Components.Layout
 
         protected override async Task OnInitializedAsync()
         {
+            ((JwtAuthenticationStateProvider)AuthStateProvider).OnAuthenticationStateChangedProfilePicture += async () =>
+            {
+                profilePictureUrl = await LoadUserPhotoAsync();
+                StateHasChanged();
+            };
+
             token = await _localStorage.GetItemAsync<string>("authToken");
 
-            if(!string.IsNullOrWhiteSpace(token))
-            {
-                var request = new HttpRequestMessage(HttpMethod.Get, "api/account/user/photo");
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-                var response = await HttpClient.SendAsync(request);
-
-                if(response.IsSuccessStatusCode)
-                {
-                    var photo = await response.Content.ReadAsByteArrayAsync();
-                    var base64Image = Convert.ToBase64String(photo);
-                    profilePictureUrl = $"data:image/png;base64,{base64Image}";
-
-                    currentUrl = Navigation.Uri;
-                    Navigation.LocationChanged += HandleLocationChanged;
-                }
-                else
-                {
-                    // Handle error, e.g., show notification or log
-                    var errorMessage = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Failed to fetch user photo. Status: {response.StatusCode}, Error: {errorMessage}");
-                }
-            }
+            profilePictureUrl = await LoadUserPhotoAsync();
         }
 
         public async Task OpenLoginPopup()
@@ -92,6 +76,36 @@ namespace ExpensesPlanner.Components.Layout
                 CloseOnClick = true,
                 Payload = DateTime.Now
             });
+        }
+
+        private async Task<string> LoadUserPhotoAsync()
+        {
+            token = await _localStorage.GetItemAsync<string>("authToken");
+
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, "api/account/user/photo");
+
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var response = await HttpClient.SendAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var photo = await response.Content.ReadAsByteArrayAsync();
+                    var base64Image = Convert.ToBase64String(photo);
+                    return $"data:image/png;base64,{base64Image}";
+                }
+                else
+                {
+                    // Handle error, e.g., show notification or log
+                    var errorMessage = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Failed to fetch user photo. Status: {response.StatusCode}, Error: {errorMessage}");
+                    return "Failed";
+                }
+            }
+
+            return "Failed";
         }
 
         public async Task GoToExpenses()

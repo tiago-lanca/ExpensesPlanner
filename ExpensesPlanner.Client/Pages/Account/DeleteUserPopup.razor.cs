@@ -1,5 +1,6 @@
 ﻿using ExpensesPlanner.Client.DTO;
 using ExpensesPlanner.Client.Interfaces;
+using ExpensesPlanner.Client.Models;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 
@@ -12,7 +13,7 @@ namespace ExpensesPlanner.Client.Pages.Account
         [Inject] NotificationService NotificationService { get; set; } = default!;
         [Parameter] public string UserId { get; set; } = string.Empty;
 
-        private UserDetails user = new();
+        private ApplicationUser user = new();
 
         protected override async Task OnParametersSetAsync()
         {

@@ -12,6 +12,7 @@ namespace ExpensesPlanner.Client.Services
         private readonly ILocalStorageService _localStorage;
         private readonly IJSRuntime _jsRunTime;
         private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
+        public event Action OnAuthenticationStateChangedProfilePicture;
 
         public JwtAuthenticationStateProvider(ILocalStorageService localStorage, IJSRuntime jSRuntime)
         {
@@ -64,6 +65,7 @@ namespace ExpensesPlanner.Client.Services
             var user = new ClaimsPrincipal(identity);
 
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+            OnAuthenticationStateChangedProfilePicture?.Invoke();
         }
 
         public async Task MarkUserAsLoggedOutAsync()
