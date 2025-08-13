@@ -17,11 +17,13 @@ namespace ExpensesPlanner.Client.Pages.Account
         private RadzenTemplateForm<ApplicationUser> form { get; set; } = default!;
         [Inject] private NavigationManager navigation { get; set; } = default!;
         [Parameter] public string Id { get; set; } = string.Empty;
-        private string imagePreview;
+        private string? imagePreview;
         private bool busy;
         protected override async Task OnInitializedAsync()
         {
-            var user = await LoadUserAsync(Id);
+            ApplicationUser? user = await LoadUserAsync(Id);
+
+            if (user is null) { navigation.NavigateTo("/"); return; }
 
             editUserModel = new ApplicationUser
             {
@@ -57,7 +59,7 @@ namespace ExpensesPlanner.Client.Pages.Account
                 busy = false;
             }
         }
-        private async Task<ApplicationUser> LoadUserAsync(string id)
+        private async Task<ApplicationUser?> LoadUserAsync(string id)
         {
             return await _userService.GetUserByIdAsync(id);
         }

@@ -7,7 +7,7 @@ namespace ExpensesPlanner.Client.Utilities
     {
         public bool Equals(CategoryLimit? x, CategoryLimit? y)
         {
-            return x.Category == y.Category && x.Limit == y.Limit;
+            return x?.Category == y?.Category && x?.Limit == y?.Limit;
         }
 
         public int GetHashCode([DisallowNull] CategoryLimit obj)

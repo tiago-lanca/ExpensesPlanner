@@ -1,6 +1,7 @@
 using Blazored.LocalStorage;
 using ExpensesPlanner.Client.Interfaces;
 using ExpensesPlanner.Client.Services;
+using ExpensesPlanner.Client.Utilities;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Radzen;
@@ -26,6 +27,8 @@ namespace ExpensesPlanner.Client
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<DialogService>();
             builder.Services.AddScoped<CategoryLimitService>();
+            builder.Services.AddScoped<ApiKeyService>();
+            builder.Services.AddScoped<DialogSettingsService>();
 
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();

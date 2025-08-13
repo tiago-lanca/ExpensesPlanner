@@ -12,12 +12,12 @@ namespace ExpensesPlanner.Client.Services
         private readonly ILocalStorageService _localStorage;
         private readonly IJSRuntime _jsRunTime;
         private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
-        public event Action OnAuthenticationStateChangedProfilePicture;
+        public event Action OnAuthenticationStateChangedProfilePicture = delegate { };
 
-        public JwtAuthenticationStateProvider(ILocalStorageService localStorage, IJSRuntime jSRuntime)
+        public JwtAuthenticationStateProvider(ILocalStorageService localStorage, IJSRuntime jsRuntime)
         {
             _localStorage = localStorage;
-            _jsRunTime = jSRuntime;
+            _jsRunTime = jsRuntime;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()

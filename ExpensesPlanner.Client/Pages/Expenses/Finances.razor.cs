@@ -26,11 +26,13 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Inject] private Radzen.DialogService dialogService { get; set; } = default!;
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         [Inject] private IUserService _userService { get; set; } = default!;
+        [Inject] private DialogSettingsService DialogSettings { get; set; } = default!;
 
         private string todayMonth => DateTime.Now.ToString("MMM", CultureInfo.InvariantCulture);
         private readonly string dropdownCategoryDefaultMessage = "Select Category";
         private string userId = string.Empty;
         private bool hasChanges = false;
+        private bool PopupVisible = false;
         private string selectedAddCategory = string.Empty;
         private string progressBarClass = "progressbar-blue";
         private string filteredDate => $"{filteredMonth} {filteredYear}";
@@ -42,6 +44,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         private int ExpenseYear => DateTime.Now.Year;
         private List<string> availableCategories = new();
         private ListExpenses listExpenses = new();
+        private List<Expense> monthExpenses = new();
         private List<CategoryLimit> initialCategoryLimitList = new();
         private Dictionary<string, decimal> expensesByCategory = new();
         private List<CategoryLimit> allCategoryLimitsList = new();
@@ -49,7 +52,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         private readonly List<string> Months = Enum.GetNames(typeof(Months)).ToList();
         private List<SalaryExpensesChart> chartData = new();
         private List<ExpenseCategory> monthCategories => GetExpensesCategoriesMonthFilter();
-        private ApplicationUser user { get; set; } = default!;
+        private ApplicationUser? User { get; set; } = default!;
 
         protected override async Task OnInitializedAsync()
         {
@@ -60,10 +63,9 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
             if (string.IsNullOrWhiteSpace(token)) { Navigation.NavigateTo("/"); return; }
 
-            user = await authService.GetCurrentUserAsync(token);
-            userId = user.Id!;            
+            User = await authService.GetCurrentUserAsync(token);          
 
-            listExpenses = await _listExpensesService.GetListByUserIdAsync(userId);
+            listExpenses = await _listExpensesService.GetListByUserIdAsync(User);
 
             await InitializeCategoryLimits();
 
@@ -209,7 +211,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         {    
             foreach (var category in filteredCategoryLimits)
             {
-                expensesByCategory[category.Category] = listExpenses.Expenses
+                expensesByCategory[category.Category] = listExpenses.Expenses!
                     .Where(expense => expense.CreationDate.Month == (int)Enum.Parse<Months>(filteredMonth)
                             && expense.CreationDate.Year == filteredYear 
                             && expense.Category == category.Category)
@@ -220,7 +222,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         private void GetFilteredCategoryLimitByMonth()
         {
             filteredCategoryLimits = allCategoryLimitsList
-                .Where(catlimit => catlimit.Date.Month == Enum.Parse<Months>(filteredMonth) && catlimit.Date.Year == filteredYear)
+                .Where(catlimit => catlimit.Date?.Month == Enum.Parse<Months>(filteredMonth) && catlimit.Date.Year == filteredYear)
                 .ToList();
 
             GetExpensesAmountByCategory();
@@ -229,10 +231,10 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
         private async Task RefreshChartData()
         {
-            user = await _userService.GetApplicationUserByIdAsync(userId);
+            User = await _userService.GetApplicationUserByIdAsync(userId);
 
             // Filter expenses by month and year
-            var filteredExpensesByMonthYear = listExpenses.Expenses
+            var filteredExpensesByMonthYear = listExpenses.Expenses!
                 .Where(exp => exp.CreationDate.ToString("MMM", CultureInfo.InvariantCulture) == filteredMonth && exp.CreationDate.Year == filteredYear);
 
             // Group expenses by category and calculate total amount
@@ -241,7 +243,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                 .Select(group => new SalaryExpensesChart
                 {
                     ChartDataItem = "Expenses",
-                    ExpenseCategory = Enum.Parse<ExpenseCategory>(group.Key),
+                    ExpenseCategory = Enum.Parse<ExpenseCategory>(group.Key!),
                     TotalAmount = group.Sum(exp => exp.Amount)
                 });
 
@@ -249,6 +251,8 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             {
                 await CreateUserMonthlyExpense(filteredCategoryLimits, groupedExpensesByCategory.ToList());
             }
+            else
+                await UpdateUserMonthlyExpense(groupedExpensesByCategory.ToList());
 
             chartData = GetSalaryExpensesChart();
 
@@ -272,7 +276,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             if (info.Series.Name == "Salary")
             {
                 //PopupVisible = true;
-                await LoadStateAsync();
+                await DialogSettings.LoadStateAsync();
 
                 await dialogService.OpenAsync<SalaryPresetPopup>("Set a Salary",
                        new Dictionary<string, object>() { 
@@ -286,11 +290,26 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                            CloseDialogOnOverlayClick = false
                        });
 
-                await SaveStateAsync();
+                await DialogSettings.SaveStateAsync();
 
-                await UpdateUserMonthlyExpense();
                 await RefreshChartData();
             }
+
+            else
+            {
+                monthExpenses = listExpenses.Expenses!
+                    .Where(Expenses => Expenses.CreationDate.Month == (int)Enum.Parse<Months>(filteredMonth)
+                            && Expenses.CreationDate.Year == filteredYear
+                            && Expenses.Category == info.Series.Name).ToList();
+
+                foreach(var expense in monthExpenses)
+                {
+                    Console.WriteLine(expense.Description);
+                }
+
+                PopupVisible = true;
+            }
+            
         }
 
         private async Task PreviousMonth()
@@ -329,10 +348,10 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         }
 
         private List<ExpenseCategory> GetExpensesCategoriesMonthFilter() =>
-            listExpenses.Expenses
+            listExpenses.Expenses!
             .Where(expense => expense.CreationDate.Month == (int)Enum.Parse<Months>(filteredMonth)
                     && expense.CreationDate.Year == filteredYear)
-            .Select(expense => Enum.Parse<ExpenseCategory>(expense.Category))
+            .Select(expense => Enum.Parse<ExpenseCategory>(expense.Category!))
             .Distinct()
             .ToList();
 
@@ -343,22 +362,22 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         
         private void OnSelectedCategory(DropDownButtonItemClickEventArgs args) => selectedAddCategory = args.ItemInfo.Text;
         
-        private async Task UpdateUserMonthlyExpense()
+        private async Task UpdateUserMonthlyExpense(List<SalaryExpensesChart> dataChart)
         {
-            user = await _userService.GetApplicationUserByIdAsync(userId);
+            User = await _userService.GetApplicationUserByIdAsync(userId);
 
             // Find the MonthlyExpense for the current filtered month and year
-            var monthlyExpense = user.MonthlyExpenseChart
+            var monthlyExpense = User?.MonthlyExpenseChart
                 .FirstOrDefault(me => me.Date.Month == Enum.Parse<Months>(filteredMonth) && me.Date.Year == filteredYear);
 
             if (monthlyExpense != null)
             {
-                // Update salary in the existing SalaryExpensesChart
+                /*// Update salary in the existing SalaryExpensesChart
                 var chart = monthlyExpense.SalaryExpensesChart
                     .FirstOrDefault(chart => chart.ChartDataItem == "Salary");
                 if (chart != null)
                 {
-                    chart.Salary = user.Salary_Preset;
+                    chart.Salary = user.Salary_Preset_Enabled ? user.Salary_Preset : chart.Salary;
                 }
                 else
                 {
@@ -368,7 +387,16 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                         ChartDataItem = "Salary",
                         Salary = user.Salary_Preset == null ? 200 : user.Salary_Preset
                     });
-                }
+                }*/
+
+                // Update the expense chart in the existing SalaryExpensesChart
+                var expenseChart = User?.MonthlyExpenseChart
+                    .FirstOrDefault(me => me.Date.Month == Enum.Parse<Months>(filteredMonth) && me.Date.Year == filteredYear)?.SalaryExpensesChart;
+
+                expenseChart?.RemoveAll(chart => chart.ChartDataItem == "Expenses");
+
+                expenseChart?.AddRange(dataChart);
+                await _userService.UpdateUserAsync(User!);
             }
         }
         
@@ -376,7 +404,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         {
             var newDataChart = new List<SalaryExpensesChart>()
             {
-                new SalaryExpensesChart{ ChartDataItem = "Salary", Salary = user.Salary_Preset is null ? 200 : user.Salary_Preset }                               
+                new SalaryExpensesChart{ ChartDataItem = "Salary", Salary = User?.Salary_Preset is null ? 200 : User.Salary_Preset }                               
             };
 
             newDataChart.AddRange(dataChart);
@@ -387,63 +415,22 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                 CategoryLimits = categoryLimitsFiltered,
                 SalaryExpensesChart = newDataChart
             };
-            user.MonthlyExpenseChart.Add(monthlyExpense);
+            User?.MonthlyExpenseChart.Add(monthlyExpense);
 
-            await _userService.UpdateUserAsync(user);
+            await _userService.UpdateUserAsync(User!);
         }
 
         private List<SalaryExpensesChart> GetSalaryExpensesChart()
         {
-            return user.MonthlyExpenseChart
+            return User?.MonthlyExpenseChart
                 .FirstOrDefault(me => me.Date.Month == Enum.Parse<Months>(filteredMonth) && me.Date.Year == filteredYear)?
                 .SalaryExpensesChart ?? new List<SalaryExpensesChart>();
         }
 
-        private bool MonthlyExpenseExists => user.MonthlyExpenseChart
+        private bool MonthlyExpenseExists => User!.MonthlyExpenseChart
             .Any(me => me.Date.Month == Enum.Parse<Months>(filteredMonth) && me.Date.Year == filteredYear);
         private bool IsCategoryLimitListEmpty => filteredCategoryLimits.Count == 0;
 
-        DialogSettings _settings;
-        public DialogSettings Settings
-        {
-            get
-            {
-                return _settings;
-            }
-            set
-            {
-                if (_settings != value)
-                {
-                    _settings = value;
-                    InvokeAsync(SaveStateAsync);
-                }
-            }
-        }
-
-        private async Task LoadStateAsync()
-        {
-            await Task.CompletedTask;
-
-            var result = await JSRuntime.InvokeAsync<string>("window.localStorage.getItem", "DialogSettings");
-            if (!string.IsNullOrEmpty(result))
-            {
-                _settings = JsonSerializer.Deserialize<DialogSettings>(result);
-            }
-        }
-
-        private async Task SaveStateAsync()
-        {
-            await Task.CompletedTask;
-
-            await JSRuntime.InvokeVoidAsync("window.localStorage.setItem", "DialogSettings", JsonSerializer.Serialize<DialogSettings>(Settings));
-        }
-
-        public class DialogSettings
-        {
-            public string Left { get; set; }
-            public string Top { get; set; }
-            public string Width { get; set; }
-            public string Height { get; set; }
-        }
+        
     }
 }

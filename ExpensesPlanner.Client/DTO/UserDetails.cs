@@ -13,10 +13,10 @@ namespace ExpensesPlanner.Client.DTO
         public string Id { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "First name is required.")]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Last name is required.")]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email address format.")]

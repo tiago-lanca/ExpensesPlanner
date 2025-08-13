@@ -35,7 +35,7 @@ namespace ExpensesPlanner.Client.Models
 
         public async Task<HttpResponseMessage> UpdateListExpenses(Expense newExpense, ListExpensesService listExpensesService)
         {
-            Expenses.Add(newExpense);
+            Expenses?.Add(newExpense);
 
             return await listExpensesService.UpdateListExpensesAsync(this);
         }

@@ -2,6 +2,7 @@
 using ExpensesPlanner.Client.Pages.Account;
 using ExpensesPlanner.Client.RootPages;
 using ExpensesPlanner.Client.Services;
+using ExpensesPlanner.Client.Utilities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
@@ -17,6 +18,7 @@ namespace ExpensesPlanner.Components.Layout
     public partial class NavMenu
     {
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+        [Inject] private DialogSettingsService DialogSettings { get; set; } = default!;
         [Inject] private DialogService DialogService { get; set; } = default!;
         [Inject] private ILocalStorageService _localStorage { get; set; } = default!;
         [Inject] private NavigationManager Navigation { get; set; } = default!;
@@ -24,7 +26,7 @@ namespace ExpensesPlanner.Components.Layout
         [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
         [Inject] private HttpClient HttpClient { get; set; } = default!;
 
-        private string token = string.Empty;
+        private string? token = string.Empty;
         private string? profilePictureUrl = string.Empty;
         private string? currentUrl;
 
@@ -43,7 +45,7 @@ namespace ExpensesPlanner.Components.Layout
 
         public async Task OpenLoginPopup()
         {
-            await LoadStateAsync();
+            await DialogSettings.LoadStateAsync();
 
             await DialogService.OpenAsync<LoginPopup>("",
                     new Dictionary<string, object>(),
@@ -57,7 +59,7 @@ namespace ExpensesPlanner.Components.Layout
                         //Top = Settings != null ? Settings.Top : null
                     });
 
-            await SaveStateAsync();
+            await DialogSettings.SaveStateAsync();
             StateHasChanged();
         }
 
@@ -203,51 +205,6 @@ namespace ExpensesPlanner.Components.Layout
         public void Dispose()
         {
             Navigation.LocationChanged -= HandleLocationChanged;
-        }
-
-            DialogSettings _settings;
-        public DialogSettings Settings
-        {
-            get
-            {
-                return _settings;
-            }
-            set
-            {
-                if (_settings != value)
-                {
-                    _settings = value;
-                    InvokeAsync(SaveStateAsync);
-                }
-            }
-        }
-
-        private async Task LoadStateAsync()
-        {
-            await Task.CompletedTask;
-
-            var result = await JSRuntime.InvokeAsync<string>("window.localStorage.getItem", "DialogSettings");
-            if (!string.IsNullOrEmpty(result))
-            {
-                _settings = JsonSerializer.Deserialize<DialogSettings>(result);
-            }
-        }
-
-        private async Task SaveStateAsync()
-        {
-            await Task.CompletedTask;
-
-            await JSRuntime.InvokeVoidAsync("window.localStorage.setItem", "DialogSettings", JsonSerializer.Serialize(Settings));
-        }
-
-        
-
-        public class DialogSettings
-        {
-            public string Left { get; set; }
-            public string Top { get; set; }
-            public string Width { get; set; }
-            public string Height { get; set; }
         }
     }
 }

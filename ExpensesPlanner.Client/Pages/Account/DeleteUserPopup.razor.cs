@@ -13,7 +13,7 @@ namespace ExpensesPlanner.Client.Pages.Account
         [Inject] NotificationService NotificationService { get; set; } = default!;
         [Parameter] public string UserId { get; set; } = string.Empty;
 
-        private ApplicationUser user = new();
+        private ApplicationUser? user = new();
 
         protected override async Task OnParametersSetAsync()
         {

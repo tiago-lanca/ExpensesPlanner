@@ -7,10 +7,10 @@ namespace ExpensesPlanner.Client.DTO
     public class RegisterUser
     {
         [Required(ErrorMessage = "First name is required.")]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Last name is required.")]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email is required.")]
         [EmailAddress(ErrorMessage = "Invalid email address format.")]
@@ -18,14 +18,14 @@ namespace ExpensesPlanner.Client.DTO
 
         [Required(ErrorMessage = "Password is required.")]
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Confirm password is required.")]
         [Compare("Password", ErrorMessage = "Passwords do not match.")]
-        public string ConfirmPassword { get; set; }
+        public string ConfirmPassword { get; set; } = string.Empty;
 
         [RegularExpression(@"^(\+?\d{1,4})?[\s\-]?(\d{3})[\s\-]?(\d{3})[\s\-]?(\d{3})$", ErrorMessage = "Número inválido. Ex: +351 912345678")]
-        public string? PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; } 
 
         public string? Address { get; set; }
 

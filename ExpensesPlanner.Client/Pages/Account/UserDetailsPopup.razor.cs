@@ -17,18 +17,18 @@ namespace ExpensesPlanner.Client.Pages.Account
         private List<Expense> expenses = new List<Expense>();
         private string imagePreview { get; set; } = string.Empty;
 
-        private ApplicationUser user = new();
+        private ApplicationUser? user = new();
 
         protected override async Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync();
 
             user = await _userService.GetUserByIdAsync(UserId);
-            imagePreview = $"data:image/png;base64,{Convert.ToBase64String(user.ProfilePictureUrl)}";
+            imagePreview = $"data:image/png;base64,{Convert.ToBase64String(user?.ProfilePictureUrl!)}";
 
-            var listExpenses = await _listExpensesService.GetListByUserIdAsync(UserId);
+            var listExpenses = await _listExpensesService.GetListByUserIdAsync(user!);
 
-            expenses = listExpenses.Expenses;
+            expenses = listExpenses.Expenses!;
         }
     }
 }

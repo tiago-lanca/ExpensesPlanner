@@ -7,6 +7,6 @@ namespace ExpensesPlanner.Client.Models
     {
         public string Category { get; set; } = string.Empty;
         public int Limit { get; set; }
-        public DateDto Date { get; set; }
+        public DateDto? Date { get; set; }
     }
 }

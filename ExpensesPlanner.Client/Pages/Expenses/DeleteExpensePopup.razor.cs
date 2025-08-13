@@ -13,8 +13,6 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Inject] private ListExpensesService _listExpensesService { get; set; } = default!;
         [Inject] private NotificationService NotificationService { get; set; } = default!;
         [Parameter] public string ExpenseId { get; set; } = string.Empty;
-        private Expense expense = default!;
-        private ListExpenses listExpenses = default!;
 
         protected override async Task OnParametersSetAsync()
         {

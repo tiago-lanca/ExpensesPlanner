@@ -37,11 +37,12 @@ namespace ExpensesPlanner.Client.Pages.Account
                 {
                     var user = await response.Content.ReadFromJsonAsync<TokenResponse>();
 
-                    await LocalStorage.SetItemAsync("authToken", user.Token);
+                    await LocalStorage.SetItemAsync("authToken", user?.Token);
+                    await LocalStorage.SetItemAsync("apiKeyHash", user?.ApiKeyHash);
 
-                    HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
+                    HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
 
-                    await ((JwtAuthenticationStateProvider)AuthStateProvider).MarkUserAsAuthenticatedAsync(user.Token);
+                    await ((JwtAuthenticationStateProvider)AuthStateProvider).MarkUserAsAuthenticatedAsync(user!.Token);
                     
                     Navigation.NavigateTo(PagesRoutes.AllExpenses);
 
@@ -75,7 +76,7 @@ namespace ExpensesPlanner.Client.Pages.Account
                     CloseOnClick = true,
                     Payload = DateTime.Now
                 });
-                Console.WriteLine(ex.InnerException.Message);
+                Console.WriteLine(ex.InnerException?.Message);
             }
         }
         private void GoBackLogin()

@@ -26,10 +26,10 @@ namespace ExpensesPlanner.Client.Pages.Account
         [Inject] private NotificationService NotificationService { get; set; } = default!;
 
         private readonly RegisterUser registerModel = new();
-        private RadzenTemplateForm<RegisterUser> form;
+        private RadzenTemplateForm<RegisterUser>? form;
         
-        private string imagePreview;
-        private string message;
+        private string? imagePreview;
+        private string? message;
         private bool busy;
         private async Task SubmitForm()
         {
@@ -45,7 +45,7 @@ namespace ExpensesPlanner.Client.Pages.Account
 
                     var loginDto = new LoginDto
                     {
-                        Email = registerModel.Email,
+                        Email = registerModel.Email!,
                         Password = registerModel.Password
                     };
 
@@ -56,10 +56,10 @@ namespace ExpensesPlanner.Client.Pages.Account
                     {
                         var user = await response.Content.ReadFromJsonAsync<TokenResponse>();
 
-                        await LocalStorage.SetItemAsync("authToken", user.Token);
-                        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
+                        await LocalStorage.SetItemAsync("authToken", user?.Token);
+                        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", user?.Token);
 
-                        await ((JwtAuthenticationStateProvider)AuthStateProvider).MarkUserAsAuthenticatedAsync(user.Token);
+                        await ((JwtAuthenticationStateProvider)AuthStateProvider).MarkUserAsAuthenticatedAsync(user!.Token);
 
                         Navigation.NavigateTo(PagesRoutes.AllExpenses);
                     }
@@ -117,13 +117,13 @@ namespace ExpensesPlanner.Client.Pages.Account
 
         private async Task ValidateAndSubmit()
         {
-            if (form.EditContext.Validate())
+            if (form!.EditContext.Validate())
             {
                 await form.Submit.InvokeAsync(null);
             }
         }
 
-        private async Task Cancel()
+        private void Cancel()
         {
             Navigation.NavigateTo("/account/users");
         }

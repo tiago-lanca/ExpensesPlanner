@@ -24,9 +24,12 @@ namespace ExpensesPlanner.Client.Services
             return await _httpClient.GetFromJsonAsync<ListExpenses>($"api/listexpenses/{id}") ?? new ListExpenses();
         }
 
-        public async Task<ListExpenses> GetListByUserIdAsync(string id)
+        public async Task<ListExpenses> GetListByUserIdAsync(ApplicationUser user)
         {
-            return await _httpClient.GetFromJsonAsync<ListExpenses>($"api/listexpenses/user/{id}") ?? new ListExpenses();
+            _httpClient.DefaultRequestHeaders.Remove(ApiKeyService.API_KEY_HEADER);
+            _httpClient.DefaultRequestHeaders.Add(ApiKeyService.API_KEY_HEADER, user.ApiKeyHash);
+
+            return await _httpClient.GetFromJsonAsync<ListExpenses>($"api/listexpenses/user/{user.Id}") ?? new ListExpenses();
         }
 
         public async Task<HttpResponseMessage> UpdateListExpensesAsync(ListExpenses list)

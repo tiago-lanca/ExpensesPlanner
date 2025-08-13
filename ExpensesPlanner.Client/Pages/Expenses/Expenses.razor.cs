@@ -24,8 +24,9 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Inject] private AuthService AuthService { get; set; } = default!;
         [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
         [Inject] private DialogService dialogService { get; set; } = default!;
+        [Inject] private ApiKeyService _apiKeyService { get; set; } = default!;
 
-        
+
         private decimal TotalAmount = 0;
         private string chartKey = Guid.NewGuid().ToString();
         private bool showDataLabels = true;
@@ -39,6 +40,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         private List<Expense> FilteredExpenses { get; set; } = default!;
         private readonly List<string> Categories = Enum.GetNames(typeof(ExpenseCategory)).ToList();
         private readonly List<string> Months = Enum.GetNames(typeof(Months)).ToList();
+        private ApplicationUser User { get; set; } = default!;
 
         private Dictionary<string, List<MonthlyAmount>> dataByCategory = new();
         private string? filteredCategory
@@ -63,21 +65,28 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             }
         }
         private string? _filteredMonth;
-        private string? userId;
 
         protected override async Task OnInitializedAsync()
         {
             var token = await _localStorage.GetItemAsync<string>("authToken");
+            var ApiKey = await _localStorage.GetItemAsync<string>("apiKey");
 
             if (string.IsNullOrWhiteSpace(token)) { Navigation.NavigateTo("/"); return; }
 
             await Task.Delay(500);
 
-            var user = await AuthService.GetCurrentUserAsync(token);
-            userId = user.Id;
-            if (user.Id is null) { AllExpenses = new List<Expense>(); return; }
+            User = await AuthService.GetCurrentUserAsync(token);
 
-            await LoadExpenses(user.Id);           
+            bool isValid = await _apiKeyService.ValidateApiKeyAsync(User.ApiKeyHash);
+
+            if(!isValid)
+            {
+                Navigation.NavigateTo("/unathorized"); return;
+            }
+
+            if (User.Id is null) { AllExpenses = new List<Expense>(); return; }
+
+            await LoadExpenses(User.Id);           
         }
 
         private async Task OpenDeleteExpenseDialog(string expenseId)
@@ -97,7 +106,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                    });
 
             await SaveStateAsync();
-            await LoadExpenses(userId);
+            await LoadExpenses(User.Id);
         }
 
         private async Task OpenUpdateExpenseDialog(string expenseId)
@@ -106,7 +115,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             await dialogService.OpenAsync<EditExpensePopup>("Update Expense",
                    new Dictionary<string, object>() { 
                        { "ExpenseId", expenseId }, // Pass expenseId to the EditExpensePopup
-                       { "UserId", userId }  // Pass userId to the EditExpensePopup
+                       { "UserId", User.Id }  // Pass userId to the EditExpensePopup
                    },
                    new DialogOptions()
                    {
@@ -116,7 +125,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
             await SaveStateAsync();
 
-            await LoadExpenses(userId);           
+            await LoadExpenses(User.Id);           
         }                
 
         private void GetExpensesWithFilters()
@@ -142,7 +151,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
         private async Task LoadExpenses(string userId)
         {
-            AllExpenses = (await _listExpensesService.GetListByUserIdAsync(userId)).Expenses ?? new List<Expense>();
+            AllExpenses = (await _listExpensesService.GetListByUserIdAsync(User)).Expenses ?? new List<Expense>();
             GetExpensesWithFilters();
         }
 
@@ -226,14 +235,14 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         private decimal CalculateTotalAmount()
             => TotalAmount = FilteredExpenses?.Sum(expense => expense.Amount) ?? 0;
 
-        private void ClearCategoryFilter() { filteredCategory = null; LoadExpenses(userId); }
+        private async Task ClearCategoryFilter() { filteredCategory = null; await LoadExpenses(User.Id); }
 
 
-        private void ClearMonthFilter() { filteredMonth = null; LoadExpenses(userId); }
+        private async Task ClearMonthFilter() { filteredMonth = null; await LoadExpenses(User.Id); }
 
         private string FormatAsEUR(object value)
         {
-            return ((double)value).ToString("C", new System.Globalization.CultureInfo("de-DE"));
+            return ((double)value).ToString("C", new CultureInfo("de-DE"));
         }
 
 

@@ -11,11 +11,13 @@ namespace ExpensesPlanner.Client.Services
     public class AuthService
     {
         private readonly HttpClient _httpClient;
-        [Inject] private ILocalStorageService LocalStorage { get; set; } = default!;
+        private ILocalStorageService _localStorage { get; set; } = default!;
+        private string? ApiKey = string.Empty;
 
-        public AuthService(HttpClient httpClient)
+        public AuthService(HttpClient httpClient, ILocalStorageService localStorage)
         {
             _httpClient = httpClient;
+            _localStorage = localStorage;
         }
 
         public async Task<HttpResponseMessage> LoginAsync(LoginDto dto)
@@ -25,21 +27,27 @@ namespace ExpensesPlanner.Client.Services
 
         public async Task<ApplicationUser> GetCurrentUserAsync(string token)
         {
+            ApiKey = await _localStorage.GetItemAsync<string>("apiKeyHash");
+
             // Adds the token to the Authorization header for the request
             _httpClient.DefaultRequestHeaders.Authorization =
                         new AuthenticationHeaderValue("Bearer", token);
 
+            _httpClient.DefaultRequestHeaders.Remove(ApiKeyService.API_KEY_HEADER);
+            _httpClient.DefaultRequestHeaders.Add(ApiKeyService.API_KEY_HEADER, ApiKey);
+
             var response = await _httpClient.GetAsync("api/auth/me");
+
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<ApplicationUser>();
+                return await response.Content.ReadFromJsonAsync<ApplicationUser>() ?? null!;
             }
             return null!;
         }
 
         public async Task<bool> IsUserLoggedInAsync()
         {
-            var token = await LocalStorage.GetItemAsync<string>("authToken");
+            var token = await _localStorage.GetItemAsync<string>("authToken");
             if (!string.IsNullOrEmpty(token)) return false;
 
             var handler = new JwtSecurityTokenHandler();
@@ -47,7 +55,7 @@ namespace ExpensesPlanner.Client.Services
 
             if(jwt.ValidTo < DateTime.UtcNow)
             {
-                await LocalStorage.RemoveItemAsync("authToken");
+                await _localStorage.RemoveItemAsync("authToken");
                 return false;
             }
 

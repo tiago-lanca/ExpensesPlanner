@@ -19,7 +19,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         [Parameter] public int filteredYear { get; set; } = DateTime.Now.Year;
 
         private int MonthSalary;
-        private ApplicationUser user = new();
+        private ApplicationUser? user = new();
         private CultureInfo CultureInfo = CultureInfo.GetCultureInfo("de-DE");
         private bool EnableSalaryPreset = false;
 
@@ -29,7 +29,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
 
             user = await _userService.GetUserByIdAsync(UserId);
 
-            MonthSalary = user.MonthlyExpenseChart
+            MonthSalary = user!.MonthlyExpenseChart
                 .FirstOrDefault(me => me.Date.Month == Enum.Parse<Months>(filteredMonth) && me.Date.Year == filteredYear)?
                 .SalaryExpensesChart.FirstOrDefault(chart => chart.ChartDataItem == "Salary")?.Salary ?? 0;
         }
@@ -38,11 +38,11 @@ namespace ExpensesPlanner.Client.Pages.Expenses
         {
             try
             {
-                var userMonthSalary = user.MonthlyExpenseChart
+                var userMonthSalary = user!.MonthlyExpenseChart
                                         .FirstOrDefault(me => me.Date.Month == Enum.Parse<Months>(filteredMonth) && me.Date.Year == filteredYear)?
                                         .SalaryExpensesChart.FirstOrDefault(chart => chart.ChartDataItem == "Salary");
 
-                userMonthSalary.Salary = MonthSalary;
+                userMonthSalary!.Salary = MonthSalary;
 
                 // If the salary preset is enabled, set the Salary and Salary_Preset properties for the user
                 if (EnableSalaryPreset) { user.Salary_Preset = MonthSalary; user.Salary_Preset_Enabled = true; }

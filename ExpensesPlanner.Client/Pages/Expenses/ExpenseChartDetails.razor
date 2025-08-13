@@ -1,0 +1,18 @@
+﻿
+
+    <div class="grid-container">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 30px; margin-top: 10px;">
+            <span class="material-symbols-outlined me-2" style="font-size: 32px;">@IconHelper.GetIconForCategory(Category)</span>
+            <span style="font-size: 25px;">@Category</span>
+        </div>
+
+        <DxGrid Data="@expensesList" ShowAllRows="true" ColumnResizeMode="GridColumnResizeMode.NextColumn" TextWrapEnabled="false">
+            <Columns>
+                <DxGridDataColumn CaptionAlignment="GridTextAlignment.Center" TextAlignment="GridTextAlignment.Left" FieldName="Description" />
+                <DxGridDataColumn CaptionAlignment="GridTextAlignment.Center" TextAlignment="GridTextAlignment.Center" FieldName="Amount" />
+                <DxGridDataColumn CaptionAlignment="GridTextAlignment.Center" TextAlignment="GridTextAlignment.Center" FieldName="CreationDate" />
+            </Columns>
+        </DxGrid>
+        <br />
+        <p style="text-align: right; font-size: 17px;"><b>Total:</b> @TotalAmount€</p>
+    </div>

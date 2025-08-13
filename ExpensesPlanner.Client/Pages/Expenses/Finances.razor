@@ -142,20 +142,25 @@
                             <DxChartTitle Text="Salary vs Expenses" />
                             <DxChartBarSeries T="SalaryExpensesChart" TArgument="string" TValue="int" Name="Salary" 
                                 ArgumentField="item => item.ChartDataItem" ValueField="item => item.Salary ?? 0" />
-                                @* @<DxPopup @bind-Visible="@PopupVisible" ShowFooter="false" HeaderText="Preset Salary">
-                                    <BodyContentTemplate>
-                                        <SalaryPresetPopup UserId="@userId"/>
-                                    </BodyContentTemplate>
-                                    * <FooterContentTemplate>
-
-                                    </FooterContentTemplate> 
-                                </DxPopup>*@
+                                
                             @foreach (var category in monthCategories)
                             {
                                 <DxChartStackedBarSeries T="SalaryExpensesChart" TArgument="string" TValue="decimal" Name="@Enum.GetName(typeof(ExpenseCategory), category)"
                                     ArgumentField="item => item.ChartDataItem" ValueField="item => item.TotalAmount"
                                     Filter="@((SalaryExpensesChart item) => item.ExpenseCategory == category)" />
                             }
+                            <!-- Popup showing expenses details of the month, by category -->
+                            <DxPopup @bind-Visible="@PopupVisible" ShowFooter="true" HeaderText="Expenses Details ">
+                                    <BodyContentTemplate>
+                                        <ExpenseChartDetails UserId="@userId" expensesList="monthExpenses"/>
+                                    </BodyContentTemplate>
+                                    <FooterContentTemplate>
+                                        <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Primary" Text="CLOSE" Click="@(() => PopupVisible = false)" />
+                                        @* <DxButton CssClass="popup-button my-1 ms-2" RenderStyle="ButtonRenderStyle.Secondary" Text="Cancel" Click="@(() => PopupVisible = false)" /> *@
+                                    </FooterContentTemplate> 
+                            </DxPopup>
+                            <!-- -->
+
                             <DxChartLegend Position="RelativePosition.Outside"
                                            HorizontalAlignment="HorizontalAlignment.Center"
                                            VerticalAlignment="VerticalEdge.Bottom" />

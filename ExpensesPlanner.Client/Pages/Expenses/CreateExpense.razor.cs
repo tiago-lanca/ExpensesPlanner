@@ -14,7 +14,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
     public partial class CreateExpense
     {
         private Expense newExpense { get; set; } = new();
-        private RadzenTemplateForm<Expense> form;
+        private RadzenTemplateForm<Expense> form = default!;
         [Inject] private IExpenseService _expenseService { get; set; } = default!;
         [Inject] private ListExpensesService _listExpensesService { get; set; } = default!;
         [Inject] private IUserService _userService { get; set; } = default!;
@@ -36,7 +36,7 @@ namespace ExpensesPlanner.Client.Pages.Expenses
             {
                 var jwtHandler = new JwtSecurityTokenHandler();
                 var jwtToken = jwtHandler.ReadJwtToken(token);
-                Id = jwtToken.Claims.FirstOrDefault(c => c.Type.Contains("nameidentifier")).Value;
+                Id = jwtToken.Claims.FirstOrDefault(c => c.Type.Contains("nameidentifier"))!.Value;
             }
 
             catch (Exception ex)
@@ -53,13 +53,13 @@ namespace ExpensesPlanner.Client.Pages.Expenses
                 var user = await _userService.GetUserByIdAsync(Id); // Replace with actual session user ID
 
                 // Check if the user has an existing List of Expenses, otherwise creates a new one
-                if (user.IsListExpensesEmpty())
+                if (user!.IsListExpensesEmpty())
                 {
                     var newList = await ListExpenses.CreateListExpenses(user, _listExpensesService);
 
                     if(newList != null)
                     {
-                        user.ListExpensesId = newList.Id;
+                        user.ListExpensesId = newList.Id!;
                         // Update the user with the new ListExpensesId
                         await _userService.UpdateUserAsync(user);
                     }

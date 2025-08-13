@@ -12,23 +12,23 @@ namespace ExpensesPlanner.Client.Models
     {
         [BsonId]
         [BsonElement("_id"), BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
+        public new string Id { get; set; } = Guid.NewGuid().ToString();
 
         [BsonElement("name"), BsonRepresentation(BsonType.String)]
         [Required]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
 
         [BsonElement("name"), BsonRepresentation(BsonType.String)]
         [Required]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
         [BsonElement("email"), BsonRepresentation(BsonType.String)]
         [Required]
-        public string? Email { get; set; }
+        public override string? Email { get; set; }
 
 
         [BsonElement("phoneNumber"), BsonRepresentation(BsonType.String)]
-        public string? PhoneNumber { get; set; }
+        public override string? PhoneNumber { get; set; }
 
         [BsonElement("address"), BsonRepresentation(BsonType.String)]
         public string? Address { get; set; }
@@ -47,6 +47,10 @@ namespace ExpensesPlanner.Client.Models
         public int? Salary_Preset { get; set; }
         public bool Salary_Preset_Enabled { get; set; } = false;
         public List<MonthlyExpenseChart> MonthlyExpenseChart { get; set; } = new List<MonthlyExpenseChart>();
+        public string ApiKeyHash { get; set; } = string.Empty;
+
+
+
 
         public bool IsListExpensesEmpty()
         {
